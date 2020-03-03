@@ -1,8 +1,6 @@
-from setuptools import setup
-import sys
-import os
-
 from pathlib import Path  # noqa E402
+
+from setuptools import setup
 
 CURRENT_DIR = Path(__file__).parent
 
@@ -21,28 +19,10 @@ setup(
     keywords="automation formatter black sql yapf autopep8 pyfmt gofmt rustfmt",
     author="Bendik Samseth",
     author_email="b.samseth@gmail.com",
-    url="https://github.com/psf/black",
+    url="https://github.com/bsamseth/blackbricks",
     license="MIT",
-    py_modules=["black", "blackd", "_black_version"],
-    ext_modules=ext_modules,
-    packages=["blib2to3", "blib2to3.pgen2"],
-    package_data={"blib2to3": ["*.txt"]},
     python_requires=">=3.6",
-    zip_safe=False,
-    install_requires=[
-        "click>=6.5",
-        "attrs>=18.1.0",
-        "appdirs",
-        "toml>=0.9.4",
-        "typed-ast>=1.4.0",
-        "regex>=2020.1.8",
-        "pathspec>=0.6, <1",
-        "dataclasses>=0.6; python_version < '3.7'",
-        "typing_extensions>=3.7.4",
-        "mypy_extensions>=0.4.3",
-    ],
-    extras_require={"d": ["aiohttp>=3.3.2", "aiohttp-cors"]},
-    test_suite="tests.test_black",
+    install_requires=["black=19.10b0", "sqlparse=0.3.1",],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",
@@ -54,13 +34,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3 :: Only",
-        "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Software Development :: Quality Assurance",
     ],
-    entry_points={
-        "console_scripts": [
-            "black=black:patched_main",
-            "blackd=blackd:patched_main [d]",
-        ]
-    },
+    entry_points={"console_scripts": ["blackbricks=blackbricks:main",]},
 )
