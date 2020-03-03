@@ -1,7 +1,7 @@
 """
 Formatting tool for Databricks python notebooks.
 
-Python cells are formatter using `black`, and SQL cells are formatted by `sqlparse`.
+Python cells are formatted using `black`, and SQL cells are formatted by `sqlparse`.
 """
 import argparse
 import os
@@ -38,13 +38,14 @@ def format_sql_cell(cell, sql_keyword_case="upper"):
     )
 
 
-def validate_filename(path):
-    path = os.path.abspath(path)
-    try:
-        with open(path):
-            return path
-    except IOError:
-        raise argparse.ArgumentTypeError(f"Could not open file: {path}") from None
+def validate_filenames(paths):
+    for path in paths:
+        path = os.path.abspath(path)
+        try:
+            with open(path):
+                yield path
+        except IOError:
+            raise argparse.ArgumentTypeError(f"Could not open file: {path}") from None
 
 
 def diff(a, b, a_name, b_name):
@@ -62,7 +63,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
 
     parser.add_argument(
-        "filename", type=validate_filename, help="Path to the notebook to format",
+        "filename(s)",
+        nargs="*",
+        type=validate_filenames,
+        help="Path to the notebook to format",
     )
     parser.add_argument(
         "--line-length",
@@ -94,46 +98,50 @@ def main():
     )
 
     args = parser.parse_args()
-    with open(args.filename) as f:
-        content = f.read()
 
-    COMMAND = "# COMMAND ----------"
-    cells = content.split(COMMAND)
+    no_change = True
 
-    output_cells = []
-    for cell in cells:
-        cell = cell.strip()
-        if "# MAGIC %sql" in cell:
-            output_cells.append(
-                format_sql_cell(
-                    cell, sql_keyword_case="lower" if args.sql_lower else "upper"
+    for filename in args.filenames:
+        with open(filename) as f:
+            content = f.read()
+
+        COMMAND = "# COMMAND ----------"
+        cells = content.split(COMMAND)
+
+        output_cells = []
+        for cell in cells:
+            cell = cell.strip()
+            if "# MAGIC %sql" in cell:
+                output_cells.append(
+                    format_sql_cell(
+                        cell, sql_keyword_case="lower" if args.sql_lower else "upper"
+                    )
+                )
+            elif "# MAGIC" in cell:
+                output_cells.append(cell)  # Generic magic cell - output as-is.
+            else:
+                output_cells.append(
+                    black.format_str(
+                        cell, mode=black.FileMode(line_length=args.line_length)
+                    )
+                )
+
+        output = f"\n\n{COMMAND}\n\n".join(cell.strip() for cell in output_cells)
+
+        no_change &= output == content
+
+        if not args.check:
+            with open(filename, "w") as f:
+                f.write(output.rstrip() + "\n")
+        elif args.diff:
+            print(
+                diff(
+                    content,
+                    output,
+                    f"{os.path.basename(filename)} (before)",
+                    f"{os.path.basename(filename)} (after)",
                 )
             )
-        elif "# MAGIC" in cell:
-            output_cells.append(cell)  # Generic magic cell - output as-is.
-        else:
-            output_cells.append(
-                black.format_str(
-                    cell, mode=black.FileMode(line_length=args.line_length)
-                )
-            )
-
-    output = f"\n\n{COMMAND}\n\n".join(cell.strip() for cell in output_cells)
-
-    no_change = output == content
-
-    if not args.check:
-        with open(args.filename, "w") as f:
-            f.write(output.rstrip() + "\n")
-    elif args.diff:
-        print(
-            diff(
-                content,
-                output,
-                f"{os.path.basename(args.filename)} (before)",
-                f"{os.path.basename(args.filename)} (after)",
-            )
-        )
 
     sys.exit(int(no_change))
 

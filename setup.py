@@ -1,6 +1,6 @@
 from pathlib import Path  # noqa E402
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 CURRENT_DIR = Path(__file__).parent
 
@@ -22,7 +22,8 @@ setup(
     url="https://github.com/bsamseth/blackbricks",
     license="MIT",
     python_requires=">=3.6",
-    install_requires=["black=19.10b0", "sqlparse=0.3.1",],
+    install_requires=["black==19.10b0", "sqlparse==0.3.1"],
+    packages=find_packages(),
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",
@@ -36,5 +37,5 @@ setup(
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Software Development :: Quality Assurance",
     ],
-    entry_points={"console_scripts": ["blackbricks=blackbricks:main",]},
+    entry_points={"console_scripts": ["blackbricks=blackbricks.blackbricks:main"]},
 )
