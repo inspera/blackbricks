@@ -49,10 +49,11 @@ Use [pre-commit](https://github.com/andialbrecht/sqlparse). Add a
 ```yaml
 repos:
 -   repo: https://github.com/bsamseth/blackbricks
-    rev: 0.2.0
+    rev: 0.2.1
     hooks:
     - id: blackbricks
       args: [--line-length=120]
 ```
 
+Set the `rev` attribute to the most recent version of `blackbricks`.
 The `args` are optional and can be used to set any of `blackbricks` options.
