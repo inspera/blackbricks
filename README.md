@@ -43,7 +43,7 @@ optional arguments:
 
 ## Version control integration
 
-Use [pre-commit](https://github.com/andialbrecht/sqlparse). Add a
+Use [pre-commit](https://pre-commit.com). Add a
 `.pre-commit-config.yaml` file to your repo with the following content:
 
 ```yaml
