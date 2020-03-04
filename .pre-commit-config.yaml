@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: blackbricks
+        name: blackbricks
+        language: system
+        entry: blackbricks
+        require_serial: true
+        types: [python]
