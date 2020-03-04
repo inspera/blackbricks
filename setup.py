@@ -2,6 +2,8 @@ from pathlib import Path  # noqa E402
 
 from setuptools import setup, find_packages
 
+from version import get_version
+
 CURRENT_DIR = Path(__file__).parent
 
 
@@ -24,6 +26,7 @@ setup(
     python_requires=">=3.6",
     install_requires=["black==19.10b0", "sqlparse==0.3.1"],
     packages=find_packages(),
+    version=get_version(),
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Console",

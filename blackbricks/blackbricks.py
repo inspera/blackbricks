@@ -13,7 +13,7 @@ import sqlparse
 
 def infinite_magic():
     while True:
-        yield "# MAGIC"
+        yield "# MAGIC "
 
 
 def format_sql_cell(cell, sql_keyword_case="upper"):
@@ -28,7 +28,7 @@ def format_sql_cell(cell, sql_keyword_case="upper"):
         sql_lines.append(" ".join(sql).strip())
 
     return "# MAGIC %sql\n" + "\n".join(
-        f"{magic} {sql}"
+        f"{magic}{sql}"
         for magic, sql in zip(
             infinite_magic(),
             sqlparse.format(
@@ -38,14 +38,13 @@ def format_sql_cell(cell, sql_keyword_case="upper"):
     )
 
 
-def validate_filenames(paths):
-    for path in paths:
-        path = os.path.abspath(path)
-        try:
-            with open(path):
-                yield path
-        except IOError:
-            raise argparse.ArgumentTypeError(f"Could not open file: {path}") from None
+def validate_filenames(path):
+    path = os.path.abspath(path)
+    try:
+        with open(path):
+            return path
+    except IOError:
+        raise argparse.ArgumentTypeError(f"Could not open file: {path}") from None
 
 
 def diff(a, b, a_name, b_name):
@@ -63,10 +62,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
 
     parser.add_argument(
-        "filename(s)",
+        "filenames",
         nargs="*",
         type=validate_filenames,
-        help="Path to the notebook to format",
+        help="Path to the notebook(s) to format",
     )
     parser.add_argument(
         "--line-length",
@@ -106,11 +105,13 @@ def main():
             content = f.read()
 
         COMMAND = "# COMMAND ----------"
-        cells = content.split(COMMAND)
+        HEADER = "# Databricks notebook source"
+        cells = content.replace(HEADER, "", 1).split(COMMAND)
 
         output_cells = []
         for cell in cells:
             cell = cell.strip()
+
             if "# MAGIC %sql" in cell:
                 output_cells.append(
                     format_sql_cell(
@@ -126,14 +127,18 @@ def main():
                     )
                 )
 
-        output = f"\n\n{COMMAND}\n\n".join(cell.strip() for cell in output_cells)
+        output = (
+            f"{HEADER}\n\n"
+            + f"\n\n{COMMAND}\n\n".join(
+                "".join(line.rstrip() + "\n" for line in cell.splitlines()).rstrip()
+                for cell in output_cells
+            ).rstrip()
+            + "\n"
+        )
 
         no_change &= output == content
 
-        if not args.check:
-            with open(filename, "w") as f:
-                f.write(output.rstrip() + "\n")
-        elif args.diff:
+        if args.diff:
             print(
                 diff(
                     content,
@@ -142,8 +147,12 @@ def main():
                     f"{os.path.basename(filename)} (after)",
                 )
             )
+        elif not args.check:
+            with open(filename, "w") as f:
+                for line in output.splitlines():
+                    f.write(line.rstrip() + "\n")
 
-    sys.exit(int(no_change))
+    sys.exit(int(not no_change))
 
 
 if __name__ == "__main__":

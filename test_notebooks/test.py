@@ -1,4 +1,5 @@
 # Databricks notebook source
+
 from pyspark.sql import SQLContext
 
 sqlContext = SQLContext(spark)
@@ -20,13 +21,23 @@ dw_management = (
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC ALTER TABLE this.that SET TBLPROPERTIES (delta.autoOptimize = true);
-# MAGIC ALTER TABLE other.that SET TBLPROPERTIES (delta.autoOptimize = true);
-
+# MAGIC ALTER TABLE this.that
+# MAGIC SET TBLPROPERTIES (delta.autoOptimize = TRUE);
+# MAGIC
+# MAGIC
+# MAGIC ALTER TABLE other.that
+# MAGIC SET TBLPROPERTIES (delta.autoOptimize = TRUE);
 
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC SELECT country, product, SUM(profit) FROM
-# MAGIC sales   left join x on x.id=sales.k GROUP BY country,
-# MAGIC product having f > 7 and fk=9 limit 5;
+# MAGIC SELECT country,
+# MAGIC        product,
+# MAGIC        SUM(profit)
+# MAGIC FROM sales
+# MAGIC LEFT JOIN x ON x.id=sales.k
+# MAGIC GROUP BY country,
+# MAGIC          product
+# MAGIC HAVING f > 7
+# MAGIC AND fk=9
+# MAGIC LIMIT 5;
