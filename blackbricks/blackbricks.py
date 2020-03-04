@@ -106,6 +106,11 @@ def main():
 
         COMMAND = "# COMMAND ----------"
         HEADER = "# Databricks notebook source"
+
+        if HEADER not in content:
+            # Note a Databricks notebook - skip
+            continue
+
         cells = content.replace(HEADER, "", 1).split(COMMAND)
 
         output_cells = []

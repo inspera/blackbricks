@@ -27,7 +27,7 @@ def get_version():
         return subprocess.check_output(cmd).decode().strip()
     except subprocess.CalledProcessError:
         print("Unable to get version number from git tags")
-        exit(1)
+        return "0.0.0"
 
 
 if __name__ == "__main__":
