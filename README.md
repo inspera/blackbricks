@@ -19,6 +19,7 @@ Usage:
 $ blackbricks --help
 usage: blackbricks [-h] [--line-length LINE_LENGTH]
                    [--sql-upper | --sql-lower] [--check | --diff]
+                   [--indent-with-two-spaces]
                    [filenames [filenames ...]]
 
 Formatting tool for Databricks python notebooks. Python cells are formatted
@@ -38,6 +39,9 @@ optional arguments:
                         Return code 0 means nothing would change.
   --diff                Don't write the files back, just output a diff for
                         each file on stdout
+  --indent-with-two-spaces
+                        Use two spaces for indentation in Python cells instead
+                        of Black's default of four.
 ```
 
 
@@ -49,10 +53,10 @@ Use [pre-commit](https://pre-commit.com). Add a
 ```yaml
 repos:
 -   repo: https://github.com/bsamseth/blackbricks
-    rev: 0.2.1
+    rev: 0.3.0
     hooks:
     - id: blackbricks
-      args: [--line-length=120]
+      args: [--line-length=120, --indent-with-two-spaces]
 ```
 
 Set the `rev` attribute to the most recent version of `blackbricks`.

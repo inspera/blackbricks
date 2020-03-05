@@ -58,6 +58,28 @@ def diff(a, b, a_name, b_name):
     )
 
 
+def fix_indentation_level(cell, use_two_spaces=False):
+    if not use_two_spaces:
+        # Assumed that Black has already done its thing and indentation is OK with four spaces.
+        return cell
+
+    reindented = []
+    for line in cell.splitlines():
+        n_spaces = 0
+        for char in line:
+            if char != " ":
+                break
+            n_spaces += 1
+
+        assert (
+            n_spaces % 4 == 0
+        ), "Format with black first, indent should be multiple of 4 spaces"
+
+        reindented.append(" " * (n_spaces // 2) + line[n_spaces:])
+
+    return "\n".join(reindented)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
 
@@ -96,6 +118,12 @@ def main():
         help="Don't write the files back, just output a diff for each file on stdout",
     )
 
+    parser.add_argument(
+        "--indent-with-two-spaces",
+        action="store_true",
+        help="Use two spaces for indentation in Python cells instead of Black's default of four.",
+    )
+
     args = parser.parse_args()
 
     no_change = True
@@ -107,7 +135,7 @@ def main():
         COMMAND = "# COMMAND ----------"
         HEADER = "# Databricks notebook source"
 
-        if HEADER not in content:
+        if HEADER not in content.lstrip().splitlines()[0]:
             # Note a Databricks notebook - skip
             continue
 
@@ -127,8 +155,11 @@ def main():
                 output_cells.append(cell)  # Generic magic cell - output as-is.
             else:
                 output_cells.append(
-                    black.format_str(
-                        cell, mode=black.FileMode(line_length=args.line_length)
+                    fix_indentation_level(
+                        black.format_str(
+                            cell, mode=black.FileMode(line_length=args.line_length)
+                        ),
+                        args.indent_with_two_spaces,
                     )
                 )
 
