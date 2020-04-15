@@ -73,10 +73,6 @@ def fix_indentation_level(cell, use_two_spaces=False):
                 break
             n_spaces += 1
 
-        assert (
-            n_spaces % 4 == 0
-        ), "Format with black first, indent should be multiple of 4 spaces"
-
         if n_spaces % 4 != 0:
             # Unknown indent level, probably inside a multiline string. Don't change.
             reindented.append(line)
