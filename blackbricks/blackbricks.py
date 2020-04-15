@@ -198,7 +198,7 @@ def main():
                 for line in output.splitlines():
                     f.write(line.rstrip() + "\n")
 
-    sys.exit(int(not no_change))
+    sys.exit(int(not no_change) if args.check else 0)
 
 
 if __name__ == "__main__":
