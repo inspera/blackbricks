@@ -10,6 +10,8 @@ import sys
 import black
 import sqlparse
 
+from . import __version__
+
 
 def infinite_magic():
     while True:
@@ -128,7 +130,15 @@ def main():
         help="Use two spaces for indentation in Python cells instead of Black's default of four.",
     )
 
+    parser.add_argument(
+        "--version", action="store_true", help="Display version information and exit."
+    )
+
     args = parser.parse_args()
+
+    if args.version:
+        print(f"blackbricks, version {__version__}")
+        sys.exit(0)
 
     no_change = True
 

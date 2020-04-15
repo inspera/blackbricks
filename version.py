@@ -1,33 +1,14 @@
-"""
-Gets the current version number from the most recent tag.
-
-This will simply get the most recent tag name that , assuming this to be
-in the proper version format
-
-Use as:
-
-    from version import *
-    setup(
-        ...
-        version=get_version(),
-        ...
-    )
-"""
-
-__all__ = "get_version"
-
-import subprocess
+import re
+import os
 
 
 def get_version():
+    """Return the current version number from blackbricks/__init__.py"""
 
-    # Get the version using "git describe".
-    cmd = "git describe --tags".split()
-    try:
-        return subprocess.check_output(cmd).decode().strip()
-    except subprocess.CalledProcessError:
-        print("Unable to get version number from git tags")
-        return "0.0.0"
+    with open(os.path.join(os.path.dirname(__file__), "blackbricks/__init__.py")) as f:
+        match = re.search(r'__version__ = "([0-9\.]+)"', f.read())
+        assert match, "No version in blackbricks/__init__.py !"
+        return match.group(1)
 
 
 if __name__ == "__main__":
