@@ -1,3 +1,8 @@
+[![PyPI version](https://img.shields.io/pypi/v/blackbricks.svg?logo=pypi&logoColor=FFE873)](https://pypi.org/project/blackbricks/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/blackbricks)](https://pypistats.org/packages/blackbricks)
+[![License](https://img.shields.io/pypi/l/blackbricks)](LICENSE)
+[![Code style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 # Blackbricks
 
 A formatting tool for your Databricks notebooks.
@@ -19,7 +24,7 @@ Usage:
 $ blackbricks --help
 usage: blackbricks [-h] [--line-length LINE_LENGTH]
                    [--sql-upper | --sql-lower] [--check | --diff]
-                   [--indent-with-two-spaces]
+                   [--indent-with-two-spaces] [--version]
                    [filenames [filenames ...]]
 
 Formatting tool for Databricks python notebooks. Python cells are formatted
@@ -42,6 +47,7 @@ optional arguments:
   --indent-with-two-spaces
                         Use two spaces for indentation in Python cells instead
                         of Black's default of four.
+  --version             Display version information and exit.
 ```
 
 
