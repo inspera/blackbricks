@@ -48,12 +48,12 @@ optional arguments:
 ## Version control integration
 
 Use [pre-commit](https://pre-commit.com). Add a
-`.pre-commit-config.yaml` file to your repo with the following content:
+`.pre-commit-config.yaml` file to your repo with the following content (changing/removing the `args` as you wish):
 
 ```yaml
 repos:
 -   repo: https://github.com/bsamseth/blackbricks
-    rev: 0.3.0
+    rev: 0.3.4
     hooks:
     - id: blackbricks
       args: [--line-length=120, --indent-with-two-spaces]
@@ -61,3 +61,7 @@ repos:
 
 Set the `rev` attribute to the most recent version of `blackbricks`.
 The `args` are optional and can be used to set any of `blackbricks` options.
+
+## Contributing
+
+If you find blackbricks useful or utterly broken, you are more than welcome to contribute improvements. Please open an issue first to discuss what you want added/fixed. Unless you are just adding tests. In that case your pull request is extremely likely to be merged right away.
