@@ -59,7 +59,7 @@ Use [pre-commit](https://pre-commit.com). Add a
 ```yaml
 repos:
 -   repo: https://github.com/bsamseth/blackbricks
-    rev: 0.3.4
+    rev: 0.3.5
     hooks:
     - id: blackbricks
       args: [--line-length=120, --indent-with-two-spaces]
