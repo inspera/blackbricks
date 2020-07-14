@@ -24,7 +24,7 @@ setup(
     url="https://github.com/inspera/blackbricks",
     license="MIT",
     python_requires=">=3.6",
-    install_requires=["black==19.10b0", "sqlparse==0.3.1"],
+    install_requires=["black==19.10b0", "sqlparse==0.3.1", "typer==0.3.0"],
     packages=find_packages(),
     version=get_version(),
     classifiers=[
