@@ -1,5 +1,4 @@
 # Databricks notebook source
-
 from pyspark.sql import SQLContext
 
 sqlContext = SQLContext(spark)

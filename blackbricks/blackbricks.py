@@ -5,7 +5,7 @@ Python cells are formatted using `black`, and SQL cells are formatted by `sqlpar
 """
 import itertools
 import os
-from typing import List
+from typing import List, Tuple
 
 import black
 import sqlparse
@@ -91,21 +91,34 @@ def version_callback(version_requested: bool):
         raise typer.Exit()
 
 
-def filenames_callback(filenames: List[str]):
-    # Validate file paths:
-    for filename in filenames:
-        try:
-            with open(filename) as f:
-                pass
-        except FileNotFoundError:
+def filenames_callback(paths: Tuple[str]):
+    """Resolve the paths given into valid file names
+
+    Directories are recursively added, similarly to how black operates.
+    """
+    paths = list(paths)
+    file_paths = []
+    while paths:
+        path = os.path.abspath(paths.pop())
+
+        if not os.path.exists(path):
             typer.echo(
                 typer.style("Error:", fg=typer.colors.RED)
                 + " No such file or directory: "
-                + typer.style(filename, fg=typer.colors.CYAN)
+                + typer.style(path, fg=typer.colors.CYAN)
             )
             raise typer.Exit(1)
 
-    return filenames
+        if os.path.isdir(path):
+
+            # Recursively  add all the files/dirs in path to the paths to be consumed.
+            paths.extend([os.path.join(path, f) for f in os.listdir(path)])
+
+        else:
+
+            file_paths.append(path)
+
+    return file_paths
 
 
 def mutually_exclusive(names, values):
@@ -205,7 +218,7 @@ def main(
                 )
 
         output = (
-            f"{HEADER}\n\n"
+            f"{HEADER}\n"
             + f"\n\n{COMMAND}\n\n".join(
                 "".join(line.rstrip() + "\n" for line in cell.splitlines()).rstrip()
                 for cell in output_cells
@@ -229,6 +242,9 @@ def main(
             with open(filename, "w") as f:
                 for line in output.splitlines():
                     f.write(line.rstrip() + "\n")
+
+            if output != content:
+                typer.secho(f"reformatted {filename}", bold=True)
         elif check and output != content:
             typer.secho(f"would reformat {filename}", bold=True)
 
