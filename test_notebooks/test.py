@@ -7,9 +7,7 @@ sqlContext = SQLContext(spark)
 # COMMAND ----------
 
 dw_management = (
-    spark.table("this.that")
-    .select("some_id")
-    .join(spark.table("other.that"), "other_id")
+  spark.table("this.that").select("some_id").join(spark.table("other.that"), "other_id")
 )
 
 # COMMAND ----------

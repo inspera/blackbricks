@@ -3,10 +3,9 @@ Formatting tool for Databricks python notebooks.
 
 Python cells are formatted using `black`, and SQL cells are formatted by `sqlparse`.
 """
-import argparse
+import itertools
 import os
-import sys
-from typing import List, Optional
+from typing import List
 
 import black
 import sqlparse
@@ -14,7 +13,37 @@ import typer
 
 from . import __version__
 
+
 app = typer.Typer(add_completion=False)
+
+
+def make_black_use_two_spaces(do_it: bool):
+    """Force black to use two spaces for indentation.
+
+    This is a copy of `black.Line.__str__` with only one change:
+        indent = "  " * self.depth
+    I.e. changing the indentation used.
+
+    Change only applied if `do_it` is True.
+    """
+
+    def patch(self) -> str:
+        """Render the line."""
+        if not self:
+            return "\n"
+
+        indent = "  " * self.depth
+        leaves = iter(self.leaves)
+        first = next(leaves)
+        res = f"{first.prefix}{indent}{first.value}"
+        for leaf in leaves:
+            res += str(leaf)
+        for comment in itertools.chain.from_iterable(self.comments.values()):
+            res += str(comment)
+        return res + "\n"
+
+    if do_it:
+        black.Line.__str__ = patch
 
 
 def infinite_magic():
@@ -55,33 +84,28 @@ def unified_diff(a, b, a_name, b_name):
     )
 
 
-def fix_indentation_level(cell, use_two_spaces=False):
-    if not use_two_spaces:
-        # Assumed that Black has already done its thing and indentation is OK with four spaces.
-        return cell
-
-    reindented = []
-    for line in cell.splitlines():
-        n_spaces = 0
-        for char in line:
-            if char != " ":
-                break
-            n_spaces += 1
-
-        if n_spaces % 4 != 0:
-            # Unknown indent level, probably inside a multiline string. Don't change.
-            reindented.append(line)
-        else:
-            reindented.append(" " * (n_spaces // 2) + line[n_spaces:])
-
-    return "\n".join(reindented)
-
-
 def version_callback(version_requested: bool):
     if version_requested:
         version = typer.style(__version__, fg=typer.colors.GREEN)
         typer.echo(f"blackbricks, version {version}")
         raise typer.Exit()
+
+
+def filenames_callback(filenames: List[str]):
+    # Validate file paths:
+    for filename in filenames:
+        try:
+            with open(filename) as f:
+                pass
+        except FileNotFoundError:
+            typer.echo(
+                typer.style("Error:", fg=typer.colors.RED)
+                + " No such file or directory: "
+                + typer.style(filename, fg=typer.colors.CYAN)
+            )
+            raise typer.Exit(1)
+
+    return filenames
 
 
 def mutually_exclusive(names, values):
@@ -97,17 +121,13 @@ def mutually_exclusive(names, values):
 @app.command()
 def main(
     filenames: List[str] = typer.Argument(
-        None,
-        path_type=str,
-        exists=True,
-        resolve_path=True,
-        help="Path to the notebook(s) to format.",
+        None, callback=filenames_callback, help="Path to the notebook(s) to format.",
     ),
     line_length: int = typer.Option(
         black.DEFAULT_LINE_LENGTH, help="How many characters per line to allow."
     ),
     sql_upper: bool = typer.Option(
-        False, "--sql-upper", help="SQL keywords should be UPPERCASE."
+        True, "--sql-upper", help="SQL keywords should be UPPERCASE."
     ),
     sql_lower: bool = typer.Option(
         False, "--sql-lower", help="SQL keywords should be lowercase."
@@ -115,7 +135,8 @@ def main(
     check: bool = typer.Option(
         False,
         "--check",
-        help="Don't write the files back, just return the status. Return code 0 means nothing would change.",
+        help="Don't write the files back, just return the status. "
+        "Return code 0 means nothing would change.",
         show_default=False,
     ),
     diff: bool = typer.Option(
@@ -125,9 +146,10 @@ def main(
         show_default=False,
     ),
     indent_with_two_spaces: bool = typer.Option(
-        False,
-        "--indent-with-two-spaces",
-        help="Use two spaces for indentation in Python cells instead of Black's default of four.",
+        True,
+        callback=make_black_use_two_spaces,
+        help="Use two spaces for indentation in Python cells instead of Black's "
+        "default of four. Databricks uses two spaces.",
     ),
     version: bool = typer.Option(
         None,
@@ -150,20 +172,8 @@ def main(
         typer.secho("No Path provided. Nothing to do.", bold=True)
         raise typer.Exit()
 
-    # Validate file paths:
-    for filename in filenames:
-        try:
-            with open(filename) as f:
-                pass
-        except FileNotFoundError:
-            typer.echo(
-                typer.style("Error:", fg=typer.colors.RED)
-                + " No such file or directory: "
-                + typer.style(filename, fg=typer.colors.CYAN)
-            )
-            raise typer.Exit(1)
-
     no_change = True
+    n_changed_files = 0
     for filename in filenames:
         with open(filename) as f:
             content = f.read()
@@ -191,12 +201,7 @@ def main(
                 output_cells.append(cell)  # Generic magic cell - output as-is.
             else:
                 output_cells.append(
-                    fix_indentation_level(
-                        black.format_str(
-                            cell, mode=black.FileMode(line_length=line_length)
-                        ),
-                        indent_with_two_spaces,
-                    )
+                    black.format_str(cell, mode=black.FileMode(line_length=line_length))
                 )
 
         output = (
@@ -209,22 +214,49 @@ def main(
         )
 
         no_change &= output == content
+        n_changed_files += output != content
 
         if diff:
-            print(
-                unified_diff(
-                    content,
-                    output,
-                    f"{os.path.basename(filename)} (before)",
-                    f"{os.path.basename(filename)} (after)",
-                )
+            diff_output = unified_diff(
+                content,
+                output,
+                f"{os.path.basename(filename)} (before)",
+                f"{os.path.basename(filename)} (after)",
             )
+            if diff_output.strip():
+                typer.echo(diff_output)
         elif not check:
             with open(filename, "w") as f:
                 for line in output.splitlines():
                     f.write(line.rstrip() + "\n")
+        elif check and output != content:
+            typer.secho(f"would reformat {filename}", bold=True)
 
-    raise typer.Exit(int(not no_change) if check else 0)
+    unchanged_number = typer.style(
+        str(len(filenames) - n_changed_files), fg=typer.colors.GREEN
+    )
+    changed_number = typer.style(str(n_changed_files), fg=typer.colors.RED)
+    unchanged_echo = (
+        f"{unchanged_number} files {'would be ' if check else ''}left unchanged"
+    )
+    changed_echo = typer.style(
+        f"{changed_number} files {'would be ' if check else ''}reformatted", bold=True
+    )
+
+    typer.secho("All done!", bold=True)
+    typer.echo(
+        ", ".join(
+            filter(
+                lambda s: bool(s),
+                [
+                    changed_echo if n_changed_files else "",
+                    unchanged_echo if len(filenames) - n_changed_files > 0 else "",
+                ],
+            )
+        )
+    )
+
+    raise typer.Exit(n_changed_files if check else 0)
 
 
 if __name__ == "__main__":
