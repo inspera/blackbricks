@@ -24,7 +24,12 @@ setup(
     url="https://github.com/inspera/blackbricks",
     license="MIT",
     python_requires=">=3.6",
-    install_requires=["black==19.10b0", "sqlparse==0.3.1", "typer==0.3.0"],
+    install_requires=[
+        "black==19.10b0",
+        "sqlparse==0.3.1",
+        "typer==0.3.0",
+        "colorama==0.4.3",
+    ],
     packages=find_packages(),
     version=get_version(),
     classifiers=[
@@ -40,5 +45,5 @@ setup(
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Software Development :: Quality Assurance",
     ],
-    entry_points={"console_scripts": ["blackbricks=blackbricks.blackbricks:main"]},
+    entry_points={"console_scripts": ["blackbricks=blackbricks.blackbricks:app"]},
 )
