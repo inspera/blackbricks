@@ -31,32 +31,39 @@ Usage:
 
 ```text
 $ blackbricks --help
-usage: blackbricks [-h] [--line-length LINE_LENGTH]
-                   [--sql-upper | --sql-lower] [--check | --diff]
-                   [--indent-with-two-spaces] [--version]
-                   [filenames [filenames ...]]
+Usage: blackbricks [OPTIONS] [FILENAMES]...
 
-Formatting tool for Databricks python notebooks. Python cells are formatted
-using `black`, and SQL cells are formatted by `sqlparse`.
+  Formatting tool for Databricks python notebooks.
 
-positional arguments:
-  filenames             Path to the notebook(s) to format
+  Python cells are formatted using `black`, and SQL cells are formatted by
+  `sqlparse`.
 
-optional arguments:
-  -h, --help            show this help message and exit
-  --line-length LINE_LENGTH
-                        How many characters per line to allow. [default: ask
-                        black]
-  --sql-upper           SQL keywords should be uppercase
-  --sql-lower           SQL keywords should be lowercase
-  --check               Don't write the files back, just return the status.
-                        Return code 0 means nothing would change.
-  --diff                Don't write the files back, just output a diff for
-                        each file on stdout
-  --indent-with-two-spaces
-                        Use two spaces for indentation in Python cells instead
-                        of Black's default of four.
-  --version             Display version information and exit.
+Arguments:
+  [FILENAMES]...  Path to the notebook(s) to format.
+
+Options:
+  --line-length INTEGER           How many characters per line to allow.
+                                  [default: 88]
+
+  --sql-upper                     SQL keywords should be UPPERCASE.  [default: True]
+
+  --sql-lower                     SQL keywords should be lowercase.  [default: False]
+
+  --check                         Don't write the files back, just return the
+                                  status. Return code 0 means nothing would
+                                  change.
+
+  --diff                          Don't write the files back, just output a
+                                  diff for each file on stdout.
+
+  --indent-with-two-spaces / --no-indent-with-two-spaces
+                                  Use two spaces for indentation in Python
+                                  cells instead of Black's default of four.
+                                  Databricks uses two spaces.  [default: True]
+
+  --version                       Display version information and exit.
+  --help                          Show this message and exit.
+
 ```
 
 
@@ -69,7 +76,7 @@ Use [pre-commit](https://pre-commit.com). Add a
 ```yaml
 repos:
 -   repo: https://github.com/bsamseth/blackbricks
-    rev: 0.3.5
+    rev: 0.4.0
     hooks:
     - id: blackbricks
       args: [--line-length=120, --indent-with-two-spaces]
