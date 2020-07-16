@@ -1,4 +1,4 @@
-from pathlib import Path  # noqa E402
+from pathlib import Path
 
 from setuptools import setup, find_packages
 
@@ -45,5 +45,5 @@ setup(
         "Programming Language :: Python :: 3 :: Only",
         "Topic :: Software Development :: Quality Assurance",
     ],
-    entry_points={"console_scripts": ["blackbricks=blackbricks.blackbricks:app"]},
+    entry_points={"console_scripts": ["blackbricks=blackbricks.cli:app"]},
 )
