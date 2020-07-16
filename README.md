@@ -33,21 +33,28 @@ Usage:
 $ blackbricks --help
 Usage: blackbricks [OPTIONS] [FILENAMES]...
 
-  Formatting tool for Databricks python notebooks.
-
-  Python cells are formatted using `black`, and SQL cells are formatted by
-  `sqlparse`.
-
 Arguments:
   [FILENAMES]...  Path to the notebook(s) to format.
 
 Options:
+  -r, --remote                    If this option is used, all filenames are
+                                  treated as paths to notebooks on your
+                                  Databricks host (i.e. not local files).
+                                  [default: False]
+
+  -p, --profile NAME              If using --remote, which Databricks profile
+                                  to use.  [default: DEFAULT]
+
   --line-length INTEGER           How many characters per line to allow.
                                   [default: 88]
 
-  --sql-upper                     SQL keywords should be UPPERCASE.  [default: True]
+  --sql-upper / --no-sql-upper    SQL keywords should be UPPERCASE or
+                                  lowercase.  [default: True]
 
-  --sql-lower                     SQL keywords should be lowercase.  [default: False]
+  --indent-with-two-spaces / --no-indent-with-two-spaces
+                                  Use two spaces for indentation in Python
+                                  cells instead of Black's default of four.
+                                  Databricks uses two spaces.  [default: True]
 
   --check                         Don't write the files back, just return the
                                   status. Return code 0 means nothing would
@@ -55,11 +62,6 @@ Options:
 
   --diff                          Don't write the files back, just output a
                                   diff for each file on stdout.
-
-  --indent-with-two-spaces / --no-indent-with-two-spaces
-                                  Use two spaces for indentation in Python
-                                  cells instead of Black's default of four.
-                                  Databricks uses two spaces.  [default: True]
 
   --version                       Display version information and exit.
   --help                          Show this message and exit.
