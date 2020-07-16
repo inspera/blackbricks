@@ -12,7 +12,7 @@ A formatting tool for your Databricks notebooks.
 
 ## Table of Contents
 - [Blackbricks](#blackbricks)
-  * [Installation and Usage](#installation)
+  * [Installation](#installation)
   * [Usage](#usage)
   * [Version control integration](#version-control-integration)
   * [Contributing](#contributing)
