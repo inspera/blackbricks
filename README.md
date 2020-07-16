@@ -11,13 +11,12 @@ A formatting tool for your Databricks notebooks.
 - SQL cells are formatted with [sqlparse](https://github.com/andialbrecht/sqlparse)
 
 ## Table of Contents
-- [Blackbricks](#blackbricks)
-  * [Installation](#installation)
-  * [Usage](#usage)
-  * [Version control integration](#version-control-integration)
-  * [Contributing](#contributing)
-  * [FAQ](#faq)
-    + [How do I use `blackbricks` on my Databricks notebooks?](#how-do-i-use--blackbricks--on-my-databricks-notebooks-)
+
+* [Installation](#installation)
+* [Usage](#usage)
+* [Version control integration](#version-control-integration)
+* [Contributing](#contributing)
+* [FAQ](#faq)
 
 ## Installation
 
@@ -130,7 +129,7 @@ wish):
 ```yaml
 repos:
 -   repo: https://github.com/bsamseth/blackbricks
-    rev: 0.4.0
+    rev: 0.5.0
     hooks:
     - id: blackbricks
       args: [--line-length=120, --indent-with-two-spaces]
@@ -141,7 +140,7 @@ The `args` are optional and can be used to set any of `blackbricks` options.
 
 ## Contributing
 
-If you find blackbricks useful or utterly broken, you are more than welcome to contribute improvements. Please open an issue first to discuss what you want added/fixed. Unless you are just adding tests. In that case your pull request is extremely likely to be merged right away.
+If you find blackbricks useful, feel free to say so with a star. If you think it is utterly broken, you are more than welcome to contribute improvements. Please open an issue first to discuss what you want added/fixed. Unless you are just adding tests. In that case your pull request is extremely likely to be merged right away.
 
 ## FAQ
 
@@ -155,12 +154,12 @@ First, make sure you have set up `databricks-cli` on your system (see
 # File: ~/.databrickscfg
 
 [DEFAULT]
-host = https://dbc-123456-a1243.cloud.databricks.com/
+host = https://dbc-b23456-a1243.cloud.databricks.com/
 username = username@example.com
 password = dapi12345678901234567890
 
 [OTHERPROFILE]
-host = https://dbc-654321-1234.cloud.databricks.com
+host = https://dbc-c54321-d234.cloud.databricks.com
 username = name.user@example.com
 password = dapi09876543211234567890
 ```
