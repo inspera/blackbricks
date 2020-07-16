@@ -40,8 +40,8 @@ You can use `blackbricks` on Python notebook files stored locally, or directly o
 For the most part, `blackbricks` operates very similary to `black`.
 
 ``` bash
-$ blackbricks notebook1.py notebook2.py # Formats both notebooks.
-$ blackbricks notebook_directory/ # Formats every notebook under the directory (recursively).
+$ blackbricks notebook1.py notebook2.py  # Formats both notebooks.
+$ blackbricks notebook_directory/  # Formats every notebook under the directory (recursively).
 ```
 An important difference is that `blackbricks` will ignore any file that does not contain the `# Databricks notebook source` header on the first line. Databricks adds this line to all Python notebooks. This means you can happily run `blackbricks` on a directory with both notebooks and regular Python files, and `blackbricks` won't touch the latter.
 
@@ -151,7 +151,7 @@ First, make sure you have set up `databricks-cli` on your system (see
 [installation](#installation)), and that you have at least one profile setup in
 `~/.databrickscfg`. As an example:
 
-``` toml
+```cfg
 # File: ~/.databrickscfg
 
 [DEFAULT]
@@ -164,6 +164,8 @@ host = https://dbc-654321-1234.cloud.databricks.com
 username = name.user@example.com
 password = dapi09876543211234567890
 ```
+
+You should use [access tokens](https://docs.databricks.com/dev-tools/api/latest/authentication.html) instead of your actual password.
 
 You can then do:
 
