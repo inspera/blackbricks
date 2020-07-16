@@ -12,14 +12,15 @@ A formatting tool for your Databricks notebooks.
 
 ## Table of Contents
 - [Blackbricks](#blackbricks)
-  * [Installation and Usage](#installation-and-usage)
+  * [Installation and Usage](#installation)
+  * [Usage](#usage)
   * [Version control integration](#version-control-integration)
   * [Contributing](#contributing)
   * [FAQ](#faq)
     + [How do I use `blackbricks` on my Databricks notebooks?](#how-do-i-use--blackbricks--on-my-databricks-notebooks-)
     + [Is there a more streamlined way to do it?](#is-there-a-more-streamlined-way-to-do-it-)
 
-## Installation and Usage 
+## Installation
 
 Install:
 
@@ -27,7 +28,33 @@ Install:
 $ pip install blackbricks
 ```
 
-Usage:
+You probably also want to have installed the `databricks-cli`, in order to use `blackbricks` directly on your notebooks.
+
+``` bash
+$ pip install databricks-cli
+$ databricks configure  # Required in order to use `blackbricks` on remote notebooks.
+```
+
+## Usage
+You can use `blackbricks` on Python notebook files stored locally, or directly on the notebooks stored in Databricks. 
+
+For the most part, `blackbricks` operates very similary to `black`.
+
+``` bash
+$ blackbricks notebook1.py notebook2.py # Formats both notebooks.
+$ blackbricks notebook_directory/ # Formats every notebook under the directory (recursively).
+```
+An important difference is that `blackbricks` will ignore any file that does not contain the `# Databricks notebook source` header on the first line. Databricks adds this line to all Python notebooks. This means you can happily run `blackbricks` on a directory with both notebooks and regular Python files, and `blackbricks` won't touch the latter.
+
+If you specify the `-r` or `--remote` flag, `blackbricks` will work directly on your notebooks stored in Databricks.
+
+``` bash
+$ blackbricks --remote /Users/username/notebook.py
+```
+
+When working on remote files, you _can not_ add whole directories.
+
+### Full usage
 
 ```text
 $ blackbricks --help
@@ -97,8 +124,9 @@ Options:
 
 ## Version control integration
 
-Use [pre-commit](https://pre-commit.com). Add a
-`.pre-commit-config.yaml` file to your repo with the following content (changing/removing the `args` as you wish):
+Use [pre-commit](https://pre-commit.com). Add a `.pre-commit-config.yaml` file
+to your repo with the following content (changing/removing the `args` as you
+wish): 
 
 ```yaml
 repos:
@@ -120,22 +148,30 @@ If you find blackbricks useful or utterly broken, you are more than welcome to c
 
 ### How do I use `blackbricks` on my Databricks notebooks?
 
-`blackbricks` is a command line program, meant to be used on files stored locally. Databricks provides no direct way to run tools on notebooks from within the notebook interface in your browser. 
+First, make sure you have set up `databricks-cli` on your system (see
+[installation](#installation)), and that you have at least one profile setup in
+`~/.databrickscfg`. As an example:
 
-The suggested way to use this is togheter with Git. 
-1. Sync your notebooks to a remote repository (through the "revision history" tab in the top right)
-2. Clone the repo locally
-3. Run `blackbricks` on the desired notebook files from a terminal
-4. Commit the newly formatted notebooks and push to your remote repo.
-5. Sync your notebook again to pick up the new changes.
+``` toml
+# File: ~/.databrickscfg
 
-### Is there a more streamlined way to do it?
+[DEFAULT]
+host = https://dbc-123456-a1243.cloud.databricks.com/
+username = username@example.com
+password = dapi12345678901234567890
 
-I'm considering adding an option to modify the Databricks notebooks directly (thorugh an additional commandline option). Something like
+[OTHERPROFILE]
+host = https://dbc-654321-1234.cloud.databricks.com
+username = name.user@example.com
+password = dapi09876543211234567890
 ```
-blackbricks --remote username:path/to/file  # Not possible (yet).
-```
-Click here to indicate interest, and enable watching this repo for new releases: 
 
-[![](https://api.gh-polls.com/poll/01ED43J871S0Q1YSW2DFV3J8N9/Yes%2C%20please%20make%20a%20command%20line%20option%20for%20this%21)](https://api.gh-polls.com/poll/01ED43J871S0Q1YSW2DFV3J8N9/Yes%2C%20please%20make%20a%20command%20line%20option%20for%20this%21/vote)
-[![](https://api.gh-polls.com/poll/01ED43J871S0Q1YSW2DFV3J8N9/I%20would%20rather%20pay%20for%20a%20Chrome%20extension.)](https://api.gh-polls.com/poll/01ED43J871S0Q1YSW2DFV3J8N9/I%20would%20rather%20pay%20for%20a%20Chrome%20extension./vote)
+You can then do:
+
+``` bash
+$ blackbricks --remote /Users/username@example.com/notebook.py  # Uses DEFAULT profile.
+$ blackbricks --remote notebook.py  # Equivalent to the above.
+$ blackbricks --remote --profile OTHERPROFILE /Users/name.user@example.com/notebook.py
+$ blackbricks --remote --profile OTHERPROFILE notebook.py  # Equivalent to the above.
+```
+
