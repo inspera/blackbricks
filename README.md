@@ -18,7 +18,6 @@ A formatting tool for your Databricks notebooks.
   * [Contributing](#contributing)
   * [FAQ](#faq)
     + [How do I use `blackbricks` on my Databricks notebooks?](#how-do-i-use--blackbricks--on-my-databricks-notebooks-)
-    + [Is there a more streamlined way to do it?](#is-there-a-more-streamlined-way-to-do-it-)
 
 ## Installation
 
