@@ -149,24 +149,24 @@ def main(
         help="Display version information and exit.",
     ),
 ):
-    f"""
+    """
     Formatting tool for Databricks python notebooks.
 
     Python cells are formatted using `black`, and SQL cells are formatted by `sqlparse`.
 
     Local files (without the `--remote` option):
-      - Only files that look like Databricks (Python) notebooks will be processed. That is,
-        they must start with the header `{HEADER}`
-      - If you specify a directory as one of the file names, all files in that directory will
-        be added, including any subdirectory.
+
+      - Only files that look like Databricks (Python) notebooks will be processed. That is, they must start with the header `# Databricks notebook source`
+
+      - If you specify a directory as one of the file names, all files in that directory will be added, including any subdirectory.
 
     Remote files (with the `--remote` option):
+
       - Make sure you have installed the Databricks CLI (``pip install databricks_cli``)
-      - Make sure you have configured at least one profile (`databricks configure`).
-        Check the file `~/.databrickscfg` if you are not sure.
-      - File paths should start with `/`.
-        Otherwise they are interpreted as relative to `/Users/username`, where `username`
-        is the username specified in the Databricks profile used.
+
+      - Make sure you have configured at least one profile (`databricks configure`). Check the file `~/.databrickscfg` if you are not sure.
+
+      - File paths should start with `/`. Otherwise they are interpreted as relative to `/Users/username`, where `username` is the username specified in the Databricks profile used.
     """
 
     mutually_exclusive(["--check", "--diff"], [check, diff])

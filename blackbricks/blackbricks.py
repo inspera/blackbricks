@@ -13,12 +13,13 @@ HEADER = "# Databricks notebook source"
 
 @dataclass(frozen=True)
 class FormatConfig:
+    "Data-only class to hold format configuration options and their defaults."
     line_length: int = black.DEFAULT_LINE_LENGTH
     sql_upper: bool = True
     two_space_indent: bool = True
 
 
-def _make_black_use_two_spaces(do_it: bool):
+def _make_black_use_two_spaces(do_it: bool) -> None:
     """Force black to use two spaces for indentation.
 
     This is a copy of `black.Line.__str__` with only one change:
@@ -49,7 +50,7 @@ def _make_black_use_two_spaces(do_it: bool):
         black.Line.__str__ = _black_default_str
 
 
-def format_str(content: str, config: FormatConfig = FormatConfig()):
+def format_str(content: str, config: FormatConfig = FormatConfig()) -> str:
     """
     Format the content of a notebook according to the format config provided.
 
@@ -95,7 +96,14 @@ def format_str(content: str, config: FormatConfig = FormatConfig()):
     return output
 
 
-def _format_sql_cell(cell, sql_keyword_case="upper"):
+def _format_sql_cell(cell: str, sql_keyword_case: str = "upper") -> str:
+    """
+    Format a MAGIC %sql cell.
+
+    :param cell: The content of an SQL cell.
+    :param sql_keyword_case: One of ["upper", "lower"], setting the case for SQL keywords.
+    :return: The cell with formating applied.
+    """
     magics = []
     sql_lines = []
     for line in cell.strip().splitlines():
@@ -114,8 +122,16 @@ def _format_sql_cell(cell, sql_keyword_case="upper"):
     )
 
 
-def unified_diff(a, b, a_name, b_name):
-    """Return a unified diff string between strings `a` and `b`."""
+def unified_diff(a: str, b: str, a_name: str, b_name: str) -> str:
+    """
+    Return a unified diff string between strings `a` and `b`.
+
+    :param a: The first string (e.g. before).
+    :param b: The second string (e.g. after).
+    :param a_name: The "filename" to display for the `a` string.
+    :param b_name: The "filename" to display for the `b` string.
+    :return: A `git diff` like diff of the two strings.
+    """
     import difflib
 
     a_lines = [line + "\n" for line in a.split("\n")]
