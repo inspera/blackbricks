@@ -27,6 +27,7 @@ setup(
     install_requires=[
         "black==19.10b0",
         "sqlparse==0.3.1",
+        "databricks-cli==0.11.0",
         "typer==0.3.0",
         "colorama==0.4.3",
     ],
