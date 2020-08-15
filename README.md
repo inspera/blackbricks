@@ -1,5 +1,6 @@
 [![PyPI version](https://img.shields.io/pypi/v/blackbricks.svg?logo=pypi&logoColor=FFE873)](https://pypi.org/project/blackbricks/)
-[![PyPI downloads](https://img.shields.io/pypi/dm/blackbricks)](https://pypistats.org/packages/blackbricks)
+[![Downloads](https://pepy.tech/badge/blackbricks)](https://pepy.tech/project/blackbricks)
+[![Downloads per month](https://pepy.tech/badge/blackbricks/month)](https://pepy.tech/project/blackbricks/month)
 [![License](https://img.shields.io/pypi/l/blackbricks)](LICENSE)
 [![Code style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
