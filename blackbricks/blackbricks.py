@@ -9,6 +9,7 @@ _black_default_str = black.Line.__str__
 
 COMMAND = "# COMMAND ----------"
 HEADER = "# Databricks notebook source"
+NOFMT = "-- nofmt"
 
 
 @dataclass(frozen=True)
@@ -102,8 +103,13 @@ def _format_sql_cell(cell: str, sql_keyword_case: str = "upper") -> str:
 
     :param cell: The content of an SQL cell.
     :param sql_keyword_case: One of ["upper", "lower"], setting the case for SQL keywords.
-    :return: The cell with formating applied.
+    :return: The cell with formatting applied.
     """
+
+    # Formatting can be disabled on a cell-by-cell basis by addint `-- nofmt` to the first line.
+    if NOFMT in cell.lstrip().splitlines()[0]:
+        return cell
+
     magics = []
     sql_lines = []
     for line in cell.strip().splitlines():

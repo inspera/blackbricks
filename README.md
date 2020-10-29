@@ -130,7 +130,7 @@ wish):
 ```yaml
 repos:
 -   repo: https://github.com/bsamseth/blackbricks
-    rev: 0.5.0
+    rev: 0.6.0
     hooks:
     - id: blackbricks
       args: [--line-length=120, --indent-with-two-spaces]
@@ -144,6 +144,18 @@ The `args` are optional and can be used to set any of `blackbricks` options.
 If you find blackbricks useful, feel free to say so with a star. If you think it is utterly broken, you are more than welcome to contribute improvements. Please open an issue first to discuss what you want added/fixed. Unless you are just adding tests. In that case your pull request is extremely likely to be merged right away.
 
 ## FAQ
+
+### Can I disable SQL formatting?
+
+Sure! Certain SQL statements might not be parsed and indented properly by `sqlparse`, and the result can be jumbled formatting. You can disable SQL formatting for a cell by adding `-- nofmt` to the very first line of a cell:
+
+```sql
+%sql  -- nofmt
+select this,
+             sql_will,   -- be kept just
+         like_this
+  from if_that_is.what_you_need
+```
 
 ### How do I use `blackbricks` on my Databricks notebooks?
 

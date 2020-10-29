@@ -38,3 +38,21 @@ dw_management = (
 # MAGIC HAVING f > 7
 # MAGIC AND fk=9
 # MAGIC LIMIT 5;
+
+# COMMAND ----------
+
+# MAGIC %sql  -- nofmt
+# MAGIC CREATE OR REPLACE VIEW abc.test AS
+# MAGIC   (SELECT foo.bar,
+# MAGIC           foo.fizz,  -- a comment
+# MAGIC           foo.fizzbar,
+# MAGIC           foo.bazz
+# MAGIC    FROM cba.tset foo);
+# MAGIC
+# MAGIC
+# MAGIC CREATE OR REPLACE VIEW asd.dsa AS
+# MAGIC   (SELECT bar.foo,
+# MAGIC           COLLECT_SET(bar.fizz)[0],
+# MAGIC           FIRST(bar.baz)
+# MAGIC    FROM dsa.asd bar
+# MAGIC    GROUP BY bar.fizzbuzz);
