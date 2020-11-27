@@ -1,6 +1,6 @@
 import base64
-import re
 import os
+from configparser import ConfigParser
 
 import typer
 from databricks_cli.sdk.api_client import ApiClient
@@ -53,17 +53,26 @@ class DatabricksAPI:
         )
 
 
+def _get_option_if_exists(raw_config, profile, option):
+    if profile == "DEFAULT":
+        # We must handle the 'DEFAULT' differently since it is not in the _sections property
+        # of raw config.
+        return (
+            raw_config.get(profile, option)
+            if raw_config.has_option(profile, option)
+            else None
+        )
+    # Check if option is defined in the profile.
+    elif option not in raw_config._sections.get(profile, {}).keys():
+        return None
+    return raw_config.get(profile, option)
+
+
 def get_api_client(profile_name: str):
     try:
-        with open(os.path.expanduser("~/.databrickscfg")) as f:
-            content = f.read()
-            match = re.match(
-                r"\[{0}\](?P<profile>.*?)((\s\[\w+\])|$)".format(profile_name),
-                content,
-                flags=re.DOTALL,
-            )
-            assert match is not None
-
+        config_path = os.path.expanduser("~/.databrickscfg")
+        raw_config = ConfigParser()
+        raw_config.read(config_path)
     except (FileNotFoundError, AssertionError):
         typer.echo(
             typer.style("Error:", fg=typer.colors.RED, bold=True)
@@ -76,16 +85,26 @@ def get_api_client(profile_name: str):
         )
         raise typer.Abort()
 
-    profile_config = match.group("profile")
+    host = _get_option_if_exists(raw_config, profile_name, "host")
+    username = _get_option_if_exists(raw_config, profile_name, "username")
+    password = _get_option_if_exists(raw_config, profile_name, "password")
+    token = _get_option_if_exists(raw_config, profile_name, "token")
 
-    host = re.match(r".*host = (\S+)", profile_config, flags=re.DOTALL).groups()[0]
-    username = re.match(
-        r".*username = (\S+)", profile_config, flags=re.DOTALL
-    ).groups()[0]
-    password = re.match(
-        r".*password = (\S+)", profile_config, flags=re.DOTALL
-    ).groups()[0]
-
-    return DatabricksAPI(
-        databricks_host=host, databricks_token=password, username=username
-    )
+    if (username != None) and (password != None):
+        return DatabricksAPI(
+            databricks_host=host, databricks_token=password, username=username
+        )
+    elif token != None:
+        return DatabricksAPI(databricks_host=host, databricks_token=token)
+    else:
+        typer.echo(
+            typer.style("Error:", fg=typer.colors.RED, bold=True)
+            + typer.style(
+                f" Found neither username + password nor token in ~/.databrickscfg",
+                bold=True,
+            ),
+        )
+        typer.echo(
+            "Run `databricks configure` and/or check your ~/.databrickscfg file."
+        )
+        raise typer.Abort()
