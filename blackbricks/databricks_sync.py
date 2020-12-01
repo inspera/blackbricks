@@ -53,27 +53,35 @@ class DatabricksAPI:
         )
 
 
-def _get_option_if_exists(raw_config, profile, option):
-    if profile == "DEFAULT":
-        # We must handle the 'DEFAULT' differently since it is not in the _sections property
-        # of raw config.
-        return (
-            raw_config.get(profile, option)
-            if raw_config.has_option(profile, option)
-            else None
-        )
-    # Check if option is defined in the profile.
-    elif option not in raw_config._sections.get(profile, {}).keys():
-        return None
-    return raw_config.get(profile, option)
-
-
 def get_api_client(profile_name: str):
+    config = ConfigParser()
+    config_path = os.path.expanduser("~/.databrickscfg")
     try:
-        config_path = os.path.expanduser("~/.databrickscfg")
-        raw_config = ConfigParser()
-        raw_config.read(config_path)
-    except (FileNotFoundError, AssertionError):
+        config.read(config_path)
+    except FileNotFoundError:
+        typer.echo(
+            typer.style("Error:", fg=typer.colors.RED, bold=True)
+            + typer.style(
+                f" Your ~/.databrickscfg file is missing.",
+                bold=True,
+            ),
+        )
+        typer.echo(
+            "If you haven't already, first install the databricks cli,\n"
+            "then run `databricks configure` and check your ~/.databrickscfg file."
+        )
+        raise typer.Abort()
+    except Exception as e:
+        typer.echo(
+            typer.style("Error:", fg=typer.colors.RED, bold=True)
+            + typer.style(
+                f" An error occurred while reading your ~/.databrickscfg file.",
+                bold=True,
+            )
+        )
+        raise e
+
+    if profile_name != "DEFAULT" and not config.has_section(profile_name):
         typer.echo(
             typer.style("Error:", fg=typer.colors.RED, bold=True)
             + typer.style(
@@ -85,26 +93,52 @@ def get_api_client(profile_name: str):
         )
         raise typer.Abort()
 
-    host = _get_option_if_exists(raw_config, profile_name, "host")
-    username = _get_option_if_exists(raw_config, profile_name, "username")
-    password = _get_option_if_exists(raw_config, profile_name, "password")
-    token = _get_option_if_exists(raw_config, profile_name, "token")
+    host = config.get(profile_name, "host")  # Will throw if missing, always needed.
+    username = config.get(profile_name, "username", fallback=None)
+    token = config.get(profile_name, "token", fallback=None)
+    password = config.get(profile_name, "password", fallback=None)
+    credentials = token if token is not None else password
 
-    if (username != None) and (password != None):
-        return DatabricksAPI(
-            databricks_host=host, databricks_token=password, username=username
+    # Handle no username:
+    if username is None:
+        typer.echo(
+            typer.style("Warning:", fg=typer.colors.YELLOW, bold=True)
+            + typer.style(" No username in ~/.databrickscfg.", bold=True)
         )
-    elif token != None:
-        return DatabricksAPI(databricks_host=host, databricks_token=token)
-    else:
+        typer.echo(
+            "Please add `username = ...` to your profile (and/or the [DEFAULT] profile)"
+            ", or be sure to always write full paths to notebooks."
+        )
+
+    # Handle no token and no password:
+    if credentials is None:
         typer.echo(
             typer.style("Error:", fg=typer.colors.RED, bold=True)
             + typer.style(
-                f" Found neither username + password nor token in ~/.databrickscfg",
+                f" Found neither token nor password in ~/.databrickscfg for profile {profile_name}",
                 bold=True,
             ),
         )
+        raise typer.Abort()
+
+    # Handle password without a username:
+    if token is None and password is not None and username is None:
         typer.echo(
-            "Run `databricks configure` and/or check your ~/.databrickscfg file."
+            typer.style("Error:", fg=typer.colors.RED, bold=True)
+            + typer.style(
+                f" Profile {profile_name} is missing a username in ~/.databrickscfg",
+                bold=True,
+            ),
         )
         raise typer.Abort()
+
+    # Handle both token and password (one might be from DEFAULT):
+    if token is not None and password is not None:
+        if password != config.defaults().get("password"):
+            credentials = password
+        if token != config.defaults().get("token"):
+            credentials = token
+
+    return DatabricksAPI(
+        databricks_host=host, databricks_token=credentials, username=username
+    )
