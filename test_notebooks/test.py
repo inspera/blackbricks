@@ -9,6 +9,13 @@ dw_management = (
   spark.table("this.that").select("some_id").join(spark.table("other.that"), "other_id")
 )
 
+
+def test_func(input_param):
+  """
+  :param   input_param: input
+  """
+  return None
+
 # COMMAND ----------
 
 # MAGIC %md

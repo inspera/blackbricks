@@ -1,11 +1,13 @@
 import itertools
 from dataclasses import dataclass
+from typing import Iterator
 
 import black
 import sqlparse
+from blib2to3.pytree import Leaf
 
 _black_default_str = black.Line.__str__
-
+_black_default_visit_string = black.LineGenerator.visit_STRING
 
 COMMAND = "# COMMAND ----------"
 HEADER = "# Databricks notebook source"
@@ -23,8 +25,14 @@ class FormatConfig:
 def _make_black_use_two_spaces(do_it: bool) -> None:
     """Force black to use two spaces for indentation.
 
-    This is a copy of `black.Line.__str__` with only one change:
+    This is a copy of:
+
+    `black.Line.__str__` with only one change:
         indent = "  " * self.depth
+
+    `black.LineGenerator.visit_STRING` with only one change:
+        indent = " " * 2 * self.current_line.depth
+
     I.e. changing the indentation used.
 
     Change only applied if `do_it` is True.
@@ -45,10 +53,30 @@ def _make_black_use_two_spaces(do_it: bool) -> None:
             res += str(comment)
         return res + "\n"
 
+    def patch_visit_STRING(self, leaf: Leaf) -> Iterator[black.Line]:
+        if black.is_docstring(leaf) and "\\\n" not in leaf.value:
+            # We're ignoring docstrings with backslash newline escapes because changing
+            # indentation of those changes the AST representation of the code.
+            prefix = black.get_string_prefix(leaf.value)
+            lead_len = len(prefix) + 3
+            tail_len = -3
+            indent = " " * 2 * self.current_line.depth
+            docstring = black.fix_docstring(leaf.value[lead_len:tail_len], indent)
+            if docstring:
+                if leaf.value[lead_len - 1] == docstring[0]:
+                    docstring = " " + docstring
+                if leaf.value[tail_len + 1] == docstring[-1]:
+                    docstring = docstring + " "
+            leaf.value = leaf.value[0:lead_len] + docstring + leaf.value[tail_len:]
+
+        yield from self.visit_default(leaf)
+
     if do_it:
         black.Line.__str__ = patch
+        black.LineGenerator.visit_STRING = patch_visit_STRING
     else:
         black.Line.__str__ = _black_default_str
+        black.LineGenerator.visit_STRING = _black_default_visit_string
 
 
 def format_str(content: str, config: FormatConfig = FormatConfig()) -> str:
