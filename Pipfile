@@ -9,7 +9,7 @@ verify_ssl = true
 sqlparse = "==0.3.1"
 databricks-cli = "*"
 typer = {extras = ["all"], version = "*"}
-black = "*"
+black = "==21.5b1"
 
 [requires]
 python_version = "3.8"

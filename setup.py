@@ -25,7 +25,7 @@ setup(
     license="MIT",
     python_requires=">=3.6",
     install_requires=[
-        "black>=20.8b1",
+        "black>=21.5b1",
         "sqlparse>=0.3.1",
         "databricks-cli>=0.11.0",
         "typer>=0.3.0",

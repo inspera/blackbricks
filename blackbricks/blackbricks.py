@@ -54,7 +54,7 @@ def _make_black_use_two_spaces(do_it: bool) -> None:
         return res + "\n"
 
     def patch_visit_STRING(self, leaf: Leaf) -> Iterator[black.Line]:
-        if black.is_docstring(leaf) and "\\\n" not in leaf.value:
+        if black.nodes.is_docstring(leaf) and "\\\n" not in leaf.value:
             # We're ignoring docstrings with backslash newline escapes because changing
             # indentation of those changes the AST representation of the code.
             prefix = black.get_string_prefix(leaf.value)
