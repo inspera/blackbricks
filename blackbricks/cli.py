@@ -2,7 +2,6 @@ import os
 from typing import List, Sequence
 
 import black
-
 import typer
 
 from . import __version__
@@ -101,7 +100,7 @@ def version_callback(version_requested: bool):
 @app.command()
 def main(
     filenames: List[str] = typer.Argument(
-        None, help="Path to the notebook(s) to format.",
+        None, help="Path to the notebook(s) to format."
     ),
     remote_filenames: bool = typer.Option(
         False,
