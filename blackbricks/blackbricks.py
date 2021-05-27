@@ -57,11 +57,11 @@ def _make_black_use_two_spaces(do_it: bool) -> None:
         if black.nodes.is_docstring(leaf) and "\\\n" not in leaf.value:
             # We're ignoring docstrings with backslash newline escapes because changing
             # indentation of those changes the AST representation of the code.
-            prefix = black.get_string_prefix(leaf.value)
+            prefix = black.strings.get_string_prefix(leaf.value)
             lead_len = len(prefix) + 3
             tail_len = -3
             indent = " " * 2 * self.current_line.depth
-            docstring = black.fix_docstring(leaf.value[lead_len:tail_len], indent)
+            docstring = black.strings.fix_docstring(leaf.value[lead_len:tail_len], indent)
             if docstring:
                 if leaf.value[lead_len - 1] == docstring[0]:
                     docstring = " " + docstring
