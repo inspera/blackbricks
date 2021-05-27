@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "blackbricks"
-version = "0.6.4"
+version = "0.6.5"
 description = "Black for Databricks notebooks"
 authors = ["Bendik Samseth <bendik.samseth@inspera.no>"]
 license = "MIT"
@@ -43,7 +43,8 @@ name = "cz_conventional_commits"
 version = "0.6.5"
 tag_format = "$version"
 version_files = [
-    "blackbricks/__init__.py:version"
+    "blackbricks/__init__.py:version",
+    "pyproject.toml:version"
 ]
 
 [tool.isort]
