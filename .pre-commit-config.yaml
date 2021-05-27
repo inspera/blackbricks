@@ -4,6 +4,29 @@ repos:
       - id: blackbricks
         name: blackbricks
         language: system
-        entry: blackbricks
+        entry: poetry run blackbricks
         require_serial: true
         types: [python]
+        files: ^test_notebooks/
+
+      - id: black
+        name: black
+        language: system
+        entry: poetry run black
+        types: [python]
+        exclude: ^test_notebooks/
+
+      - id: isort
+        name: isort
+        language: system
+        entry: poetry run isort
+        types: [python]
+        exclude: ^test_notebooks/
+
+      - id: flake8
+        name: flake8
+        language: system
+        entry: poetry run flake8 --ignore=E501,E203,W503
+        types: [python]
+        exclude: ^test_notebooks/
+
