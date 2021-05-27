@@ -4,9 +4,9 @@ from typing import Iterator
 
 import black
 import sqlparse
-from blib2to3.pytree import Leaf
 from black.nodes import is_docstring, is_multiline_string
 from black.strings import fix_docstring, get_string_prefix
+from blib2to3.pytree import Leaf
 
 _black_default_str = black.Line.__str__
 _black_default_visit_string = black.LineGenerator.visit_STRING
