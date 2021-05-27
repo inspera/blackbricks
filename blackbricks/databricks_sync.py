@@ -62,7 +62,7 @@ def get_api_client(profile_name: str):
         typer.echo(
             typer.style("Error:", fg=typer.colors.RED, bold=True)
             + typer.style(
-                f" Your ~/.databrickscfg file is missing.",
+                " Your ~/.databrickscfg file is missing.",
                 bold=True,
             ),
         )
@@ -75,7 +75,7 @@ def get_api_client(profile_name: str):
         typer.echo(
             typer.style("Error:", fg=typer.colors.RED, bold=True)
             + typer.style(
-                f" An error occurred while reading your ~/.databrickscfg file.",
+                " An error occurred while reading your ~/.databrickscfg file.",
                 bold=True,
             )
         )

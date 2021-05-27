@@ -5,7 +5,7 @@ from typing import Iterator
 import black
 import sqlparse
 from black.nodes import is_docstring, is_multiline_string
-from black.strings import fix_docstring, get_string_prefix
+from black.strings import fix_docstring
 from blib2to3.pytree import Leaf
 
 _black_default_str = black.Line.__str__
@@ -73,7 +73,7 @@ def _make_black_use_two_spaces(do_it: bool) -> None:
 
             if is_multiline_string(leaf):
                 indent = " " * 2 * self.current_line.depth
-                docstring = black.strings.fix_docstring(docstring, indent)
+                docstring = fix_docstring(docstring, indent)
             else:
                 docstring = docstring.strip()
 
