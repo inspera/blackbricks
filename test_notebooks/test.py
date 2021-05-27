@@ -5,6 +5,7 @@ sqlContext = SQLContext(spark)
 
 # COMMAND ----------
 
+# DBTITLE 1,Title for a python cell
 dw_management = (
   spark.table("this.that").select("some_id").join(spark.table("other.that"), "other_id")
 )
@@ -34,6 +35,7 @@ def test_func(input_param):
 
 # COMMAND ----------
 
+# DBTITLE 1,Title for an SQL cell
 # MAGIC %sql
 # MAGIC SELECT country,
 # MAGIC        product,

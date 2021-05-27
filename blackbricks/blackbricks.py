@@ -14,6 +14,7 @@ _black_default_visit_string = black.LineGenerator.visit_STRING
 COMMAND = "# COMMAND ----------"
 HEADER = "# Databricks notebook source"
 NOFMT = "-- nofmt"
+CELL_TITLE = "# DBTITLE 1,"
 
 
 @dataclass(frozen=True)
@@ -161,9 +162,16 @@ def _format_sql_cell(cell: str, sql_keyword_case: str = "upper") -> str:
     :return: The cell with formatting applied.
     """
 
-    # Formatting can be disabled on a cell-by-cell basis by addint `-- nofmt` to the first line.
-    if NOFMT in cell.lstrip().splitlines()[0]:
-        return cell
+    # Cells can have a title. This should just be kept at the start of the cell.
+    if CELL_TITLE in cell.lstrip().splitlines()[0]:
+        title_line = cell.lstrip().splitlines()[0] + "\n"
+        cell = cell[len(title_line) :]
+    else:
+        title_line = ""
+
+    # Formatting can be disabled on a cell-by-cell basis by adding `-- nofmt` to the first line.
+    if NOFMT in cell.strip().splitlines()[0]:
+        return title_line + cell
 
     magics = []
     sql_lines = []
@@ -175,11 +183,15 @@ def _format_sql_cell(cell: str, sql_keyword_case: str = "upper") -> str:
         magics.append(magic)
         sql_lines.append(" ".join(sql).strip())
 
-    return "# MAGIC %sql\n" + "\n".join(
-        f"# MAGIC {sql}"
-        for sql in sqlparse.format(
-            "\n".join(sql_lines), reindent=True, keyword_case=sql_keyword_case
-        ).splitlines()
+    return (
+        title_line
+        + "# MAGIC %sql\n"
+        + "\n".join(
+            f"# MAGIC {sql}"
+            for sql in sqlparse.format(
+                "\n".join(sql_lines), reindent=True, keyword_case=sql_keyword_case
+            ).splitlines()
+        )
     )
 
 
