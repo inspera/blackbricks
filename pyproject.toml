@@ -2,7 +2,7 @@
 name = "blackbricks"
 version = "0.6.4"
 description = "Black for Databricks notebooks"
-authors = ["Bendik Samseth <b.samseth@gmail.com>"]
+authors = ["Bendik Samseth <bendik.samseth@inspera.no>"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/inspera/blackbricks"
