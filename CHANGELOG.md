@@ -2,8 +2,5 @@
 
 ### Fix
 
-- update docstring handling from upstream
+- update docstring handling with upstream changes in black
 
-### Feat
-
-- option to disable sql-formatting for a cell
