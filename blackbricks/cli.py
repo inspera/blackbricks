@@ -24,7 +24,7 @@ def process_files(
     for file_ in files:
         content = file_.content
 
-        if HEADER not in content.lstrip().splitlines()[0]:
+        if not content.lstrip() or HEADER not in content.lstrip().splitlines()[0]:
             # Not a Databricks notebook - skip
             continue
 
