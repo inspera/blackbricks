@@ -1,3 +1,9 @@
+## 0.6.7 (2021-08-04)
+
+### Fix
+
+- gracefully skip emtpy files
+
 ## 0.6.6 (2021-05-27)
 
 ### Fix
