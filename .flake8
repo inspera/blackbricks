@@ -1,0 +1,10 @@
+[flake8]
+# Ignore whitespace, line length, line break
+ignore = E203,E501,W503
+
+# Extend line length and complexity to match project
+max-line-length = 190
+max-complexity = 15
+
+# Exclude test notebook
+exclude = test_notebooks\test.py
