@@ -29,7 +29,27 @@ jobs:
           python -m pip install poetry
           # python -m pip install -e '.[d]'
 
+      - name: blackbricks
+        uses: pre-commit/action@v2.0.3
+        with:
+          extra_args: blackbricks
+
+      - name: black
+        uses: pre-commit/action@v2.0.3
+        with:
+          extra_args: black_check
+
+      - name: isort
+        uses: pre-commit/action@v2.0.3
+        with:
+          extra_args: isort_check
+
       - name: flake8
         uses: pre-commit/action@v2.0.3
         with:
-          extra_args: flake8check
+          extra_args: flake8_check
+
+      - name: pytest
+        uses: pre-commit/action@v2.0.3
+        with:
+          extra_args: pytest

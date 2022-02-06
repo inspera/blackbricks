@@ -16,10 +16,10 @@ repos:
         types: [python]
         exclude: ^test_notebooks/
 
-      - id: blackcheck
+      - id: black_check
         name: black
         language: system
-        entry: poetry run black --check
+        entry: poetry run black . --check
         types: [python]
         exclude: ^test_notebooks/
 
@@ -30,10 +30,10 @@ repos:
         types: [python]
         exclude: ^test_notebooks/
 
-      - id: isortcheck
+      - id: isort_check
         name: isort
         language: system
-        entry: poetry run isort --check
+        entry: poetry run isort . --check
         types: [python]
         exclude: ^test_notebooks/
 
@@ -44,10 +44,10 @@ repos:
         types: [python]
         exclude: ^test_notebooks/
 
-      - id: flake8check
+      - id: flake8_check
         name: flake8
         language: system
-        entry: poetry run flake8
+        entry: poetry run flake8 --all-files
         types: [python]
         exclude: ^test_notebooks/
 
