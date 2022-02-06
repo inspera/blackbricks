@@ -16,6 +16,13 @@ repos:
         types: [python]
         exclude: ^test_notebooks/
 
+      - id: blackcheck
+        name: black
+        language: system
+        entry: poetry run black --check
+        types: [python]
+        exclude: ^test_notebooks/
+
       - id: isort
         name: isort
         language: system
@@ -23,10 +30,24 @@ repos:
         types: [python]
         exclude: ^test_notebooks/
 
+      - id: isortcheck
+        name: isort
+        language: system
+        entry: poetry run isort --check
+        types: [python]
+        exclude: ^test_notebooks/
+
       - id: flake8
         name: flake8
         language: system
         entry: poetry run flake8 --ignore=E501,E203,W503
+        types: [python]
+        exclude: ^test_notebooks/
+
+      - id: flake8check
+        name: flake8
+        language: system
+        entry: poetry run flake8
         types: [python]
         exclude: ^test_notebooks/
 
