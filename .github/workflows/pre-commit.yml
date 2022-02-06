@@ -44,7 +44,7 @@ jobs:
         if: always()
 
       - name: flake8 .
-        run: flake8 . --ignore=E501,E203,W503
+        run: flake8 . --ignore=E501,E203,W503 --exclude 'test_notebooks'
         if: always()
 
       - name: isort . --check
