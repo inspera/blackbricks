@@ -37,13 +37,17 @@ jobs:
         run: python -m pip install black flake8
 
       - name: black . --check
-        run: black . --check
+        run: black . --check --exclude '^test_notebooks/'
+        if: always()
 
       - name: flake8 .
         run: flake8 .
+        if: always()
 
       - name: isort . --check
         run: isort . --check
+        if: always()
 
       - name: python -m pytest
         run: python -m pytest
+        if: always()
