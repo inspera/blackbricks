@@ -7,7 +7,13 @@ import typer
 from . import __version__
 from .blackbricks import HEADER, FormatConfig, format_str, unified_diff
 from .databricks_sync import get_api_client
-from .files import File, LocalFile, RemoteNotebook, resolve_filepaths
+from .files import (
+    File,
+    LocalFile,
+    RemoteNotebook,
+    resolve_databricks_paths,
+    resolve_filepaths,
+)
 
 app = typer.Typer(add_completion=False)
 
@@ -28,7 +34,11 @@ def process_files(
             # Not a Databricks notebook - skip
             continue
 
-        output = format_str(content, config=format_config)
+        try:
+            output = format_str(content, config=format_config)
+        except Exception as e:
+            typer.secho(f"error reformatting {file_.path}, {e}", fg="red")
+            continue
 
         no_change &= output == content
         n_changed_files += output != content
@@ -176,7 +186,10 @@ def main(
 
     if remote_filenames:
         api_client = get_api_client(databricks_profile)
-        files = [RemoteNotebook(fname, api_client) for fname in filenames]
+        files = [
+            RemoteNotebook(fname, api_client)
+            for fname in resolve_databricks_paths(filenames, api_client)
+        ]
     else:
         files = [LocalFile(fname) for fname in resolve_filepaths(filenames)]
 

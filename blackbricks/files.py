@@ -49,6 +49,20 @@ class RemoteNotebook(File):
         self.api_client.write_notebook(self.path, new_content)
 
 
+def resolve_databricks_paths(paths: Sequence[str], api_client: DatabricksAPI):
+    paths = list(paths)
+    file_paths = []
+    while paths:
+        path = paths.pop()
+        response = api_client.list_workspace(path)
+        for file_obj in response:
+            if file_obj["object_type"] == "NOTEBOOK":
+                file_paths.append(file_obj["path"])
+            elif file_obj["object_type"] == "DIRECTORY":
+                paths.append(file_obj["path"])
+    return file_paths
+
+
 def resolve_filepaths(paths: Sequence[str]):
     """Resolve the paths given into valid file names
 

@@ -1,3 +1,9 @@
+## Unreleased
+
+### Change
+
+- recursively select databricks notebooks remotely
+
 ## 0.6.7 (2021-08-04)
 
 ### Fix

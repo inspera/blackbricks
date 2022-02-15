@@ -1,6 +1,7 @@
 import base64
 import os
 from configparser import ConfigParser
+from typing import List
 
 import typer
 from databricks_cli.sdk.api_client import ApiClient
@@ -51,6 +52,9 @@ class DatabricksAPI:
             content=base64.b64encode(content.encode()).decode(),
             overwrite=True,
         )
+
+    def list_workspace(self, path) -> List[dict]:
+        return self.client.list(path)["objects"]
 
 
 def get_api_client(profile_name: str):
