@@ -1,4 +1,6 @@
 import os
+import textwrap
+import warnings
 from typing import List, Sequence
 
 import black
@@ -124,7 +126,7 @@ def main(
     ),
     indent_with_two_spaces: bool = typer.Option(
         True,
-        help="Use two spaces for indentation in Python cells instead of Black's "
+        help="DEPRECATED: Use two spaces for indentation in Python cells instead of Black's "
         "default of four. Databricks uses two spaces.",
     ),
     check: bool = typer.Option(
@@ -167,6 +169,19 @@ def main(
 
       - File paths should start with `/`. Otherwise they are interpreted as relative to `/Users/username`, where `username` is the username specified in the Databricks profile used.
     """
+    if indent_with_two_spaces:
+        warnings.simplefilter("always", DeprecationWarning)
+        warnings.warn(
+            textwrap.dedent(
+                """
+                The option to use two-space indentation will be removed in version 1.0 of blackbricks.
+                Consider downgrading to version 0.6.7 to keep using two-space indentation without seeing
+                this warning, or switch to using four-space indentation.
+                """
+            ),
+            category=DeprecationWarning,
+            stacklevel=0,
+        )
 
     mutually_exclusive(["--check", "--diff"], [check, diff])
 
