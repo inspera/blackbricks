@@ -69,62 +69,56 @@ When working on remote files, you _can not_ add whole directories.
 ### Full usage
 
 ```text
-$ blackbricks --help
-Usage: blackbricks [OPTIONS] [FILENAMES]...
+$ poetry run blackbricks --help
 
-  Formatting tool for Databricks python notebooks.
+ Usage: blackbricks [OPTIONS] [FILENAMES]...
 
-  Python cells are formatted using `black`, and SQL cells are formatted by
-  `sqlparse`.
+ Formatting tool for Databricks python notebooks.
+ Python cells are formatted using `black`, and SQL cells are formatted by `sqlparse`.
+ Local files (without the `--remote` option):
+ - Only files that look like Databricks (Python) notebooks will be processed. That is,
+ they must start with the header `# Databricks notebook source`
+ - If you specify a directory as one of the file names, all files in that directory will
+ be added, including any subdirectory.
+ Remote files (with the `--remote` option):
+ - Make sure you have installed the Databricks CLI (``pip install databricks_cli``)
+ - Make sure you have configured at least one profile (`databricks configure`). Check the
+ file `~/.databrickscfg` if you are not sure.
+ - File paths should start with `/`. Otherwise they are interpreted as relative to
+ `/Users/username`, where `username` is the username specified in the Databricks profile
+ used.
 
-  Local files (without the `--remote` option):
-
-    - Only files that look like Databricks (Python) notebooks will be
-    processed. That is, they must start with the header `# Databricks
-    notebook source`
-
-    - If you specify a directory as one of the file names, all files in that
-    directory will be added, including any subdirectory.
-
-  Remote files (with the `--remote` option):
-
-    - Make sure you have installed the Databricks CLI (``pip install
-    databricks_cli``)
-
-    - Make sure you have configured at least one profile (`databricks
-    configure`). Check the file `~/.databrickscfg` if you are not sure.
-
-    - File paths should start with `/`. Otherwise they are interpreted as
-    relative to `/Users/username`, where `username` is the username
-    specified in the Databricks profile used.
-
-Arguments:
-  [FILENAMES]...  Path to the notebook(s) to format.
-
-Options:
-  -r, --remote                    If this option is used, all filenames are
-                                  treated as paths to notebooks on your
-                                  Databricks host (i.e. not local files).
-                                  [default: False]
-
-  -p, --profile NAME              If using --remote, which Databricks profile
-                                  to use.  [default: DEFAULT]
-
-  --line-length INTEGER           How many characters per line to allow.
-                                  [default: 88]
-
-  --sql-upper / --no-sql-upper    SQL keywords should be UPPERCASE or
-                                  lowercase.  [default: True]
-
-  --check                         Don't write the files back, just return the
-                                  status. Return code 0 means nothing would
-                                  change.
-
-  --diff                          Don't write the files back, just output a
-                                  diff for each file on stdout.
-
-  --version                       Display version information and exit.
-  --help                          Show this message and exit.
+╭─ Arguments ────────────────────────────────────────────────────────────────────────────╮
+│   filenames      [FILENAMES]...  Path to the notebook(s) to format. [default: None]    │
+╰────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ──────────────────────────────────────────────────────────────────────────────╮
+│ --remote                     -r                             If this option is used,    │
+│                                                             all filenames are treated  │
+│                                                             as paths to notebooks on   │
+│                                                             your Databricks host (i.e. │
+│                                                             not local files).          │
+│ --profile                    -p                    NAME     If using --remote, which   │
+│                                                             Databricks profile to use. │
+│                                                             [default: DEFAULT]         │
+│ --line-length                                      INTEGER  How many characters per    │
+│                                                             line to allow.             │
+│                                                             [default: 88]              │
+│ --sql-upper                      --no-sql-upper             SQL keywords should be     │
+│                                                             UPPERCASE or lowercase.    │
+│                                                             [default: sql-upper]       │
+│ --check                                                     Don't write the files      │
+│                                                             back, just return the      │
+│                                                             status. Return code 0      │
+│                                                             means nothing would        │
+│                                                             change.                    │
+│ --diff                                                      Don't write the files      │
+│                                                             back, just output a diff   │
+│                                                             for each file on stdout.   │
+│ --version                                                   Display version            │
+│                                                             information and exit.      │
+│ --help                                                      Show this message and      │
+│                                                             exit.                      │
+╰────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
 
