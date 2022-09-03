@@ -1,7 +1,7 @@
 import os
 import textwrap
 import warnings
-from typing import List, Sequence
+from typing import List, Optional, Sequence
 
 import black
 import typer
@@ -124,10 +124,10 @@ def main(
     sql_upper: bool = typer.Option(
         True, help="SQL keywords should be UPPERCASE or lowercase."
     ),
-    indent_with_two_spaces: bool = typer.Option(
-        True,
-        help="DEPRECATED: Use two spaces for indentation in Python cells instead of Black's "
-        "default of four. Databricks uses two spaces.",
+    no_indent_with_two_spaces: Optional[bool] = typer.Option(
+        None,
+        "--no-indent-with-two-spaces",
+        help="DEPRECATED: Blackbricks now uses 4 spaces for indentation by default. This option will be removed in future versions.",
     ),
     check: bool = typer.Option(
         False,
@@ -169,14 +169,14 @@ def main(
 
       - File paths should start with `/`. Otherwise they are interpreted as relative to `/Users/username`, where `username` is the username specified in the Databricks profile used.
     """
-    if indent_with_two_spaces:
+
+    if no_indent_with_two_spaces is not None:
         warnings.simplefilter("always", DeprecationWarning)
         warnings.warn(
             textwrap.dedent(
                 """
-                The option to use two-space indentation will be removed in version 1.0 of blackbricks.
-                Consider downgrading to version 0.6.7 to keep using two-space indentation without seeing
-                this warning, or switch to using four-space indentation.
+                Blackbricks now uses 4 spaces for indentation by default.
+                Please stop using the `--no-indent-with-two-spaces` option, as it will be removed in future versions.
                 """
             ),
             category=DeprecationWarning,
@@ -197,11 +197,7 @@ def main(
 
     n_changed_files = process_files(
         files,
-        format_config=FormatConfig(
-            line_length=line_length,
-            sql_upper=sql_upper,
-            two_space_indent=indent_with_two_spaces,
-        ),
+        format_config=FormatConfig(line_length=line_length, sql_upper=sql_upper),
         diff=diff,
         check=check,
     )

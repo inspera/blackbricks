@@ -14,7 +14,7 @@ def test_check_test_notebook():
 
         process_files(
             [LocalFile(Path(__file__).parent.parent / "test_notebooks" / "test.py")],
-            format_config=FormatConfig(two_space_indent=True),
+            format_config=FormatConfig(),
             check=True,
         )
     assert f.getvalue() == "All done!\n1 files would be left unchanged\n"

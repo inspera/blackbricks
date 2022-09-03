@@ -7,21 +7,28 @@ sqlContext = SQLContext(spark)
 
 # DBTITLE 1,Title for a python cell
 dw_management = (
-  spark.table("this.that").select("some_id").join(spark.table("other.that"), "other_id")
+    spark.table("this.that")
+    .select("some_id")
+    .join(spark.table("other.that"), "other_id")
 )
 
 
 def test_func(input_param):
-  """
-  :param   input_param: input
-  """
-  return None
+    """
+    :param   input_param: input
+    """
+    return None
 
 # COMMAND ----------
 
 # MAGIC %md
 # MAGIC # Markdown heading!
 # MAGIC  - And a list element
+
+# COMMAND ----------
+
+# MAGIC %sh
+# MAGIC ls -l
 
 # COMMAND ----------
 
