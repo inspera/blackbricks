@@ -1,3 +1,9 @@
+## 0.7.0 (2022-09-03)
+
+### Feat
+
+- deprecate two-space indentation
+
 ## 0.6.7 (2021-08-04)
 
 ### Fix
