@@ -1,7 +1,7 @@
 import os
 import textwrap
 import warnings
-from typing import List, Optional, Sequence
+from typing import List, NoReturn, Optional, Sequence
 
 import black
 import typer
@@ -19,7 +19,7 @@ def process_files(
     format_config: FormatConfig = FormatConfig(),
     diff: bool = False,
     check: bool = False,
-):
+) -> int:
     no_change = True
     n_changed_files = 0
     n_notebooks = 0
@@ -88,17 +88,19 @@ def process_files(
     return n_changed_files
 
 
-def mutually_exclusive(names, values):
+def mutually_exclusive(names: list[str], values: list[bool]) -> None:
     if sum(values) > 1:
-        names = ", ".join(typer.style(name, fg=typer.colors.CYAN) for name in names)
+        names_formatted = ", ".join(
+            typer.style(name, fg=typer.colors.CYAN) for name in names
+        )
         typer.echo(
             f"{typer.style('Error:', fg=typer.colors.RED)} "
-            + f"Only one of {names} may be use at the same time."
+            + f"Only one of {names_formatted} may be use at the same time."
         )
         raise typer.Exit(1)
 
 
-def version_callback(version_requested: bool):
+def version_callback(version_requested: bool) -> None:
     "Display versioin information and exit"
     if version_requested:
         version = typer.style(__version__, fg=typer.colors.GREEN)
@@ -126,7 +128,7 @@ def main(
         help="If using --remote, which Databricks profile to use.",
     ),
     line_length: int = typer.Option(
-        black.DEFAULT_LINE_LENGTH, help="How many characters per line to allow."
+        black.const.DEFAULT_LINE_LENGTH, help="How many characters per line to allow."
     ),
     sql_upper: bool = typer.Option(
         True, help="SQL keywords should be UPPERCASE or lowercase."
@@ -156,7 +158,7 @@ def main(
         callback=version_callback,
         help="Display version information and exit.",
     ),
-):
+) -> NoReturn:
     """
     Formatting tool for Databricks python notebooks.
 
@@ -176,6 +178,7 @@ def main(
 
       - File paths should start with `/`. Otherwise they are interpreted as relative to `/Users/username`, where `username` is the username specified in the Databricks profile used.
     """
+    assert not version, "If version is set, we don't get here."
 
     if no_indent_with_two_spaces is not None:
         warnings.simplefilter("always", DeprecationWarning)
@@ -196,6 +199,7 @@ def main(
         typer.secho("No Path provided. Nothing to do.", bold=True)
         raise typer.Exit()
 
+    files: list[File]
     if remote_filenames:
         api_client = get_api_client(databricks_profile)
         files = [RemoteNotebook(fname, api_client) for fname in filenames]

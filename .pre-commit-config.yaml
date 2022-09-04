@@ -26,7 +26,14 @@ repos:
       - id: flake8
         name: flake8
         language: system
-        entry: poetry run flake8 --ignore=E501,E203,W503
+        entry: poetry run flake8
+        types: [python]
+        exclude: ^test_notebooks/
+          
+      - id: mypy
+        name: mypy
+        language: system
+        entry: poetry run mypy
         types: [python]
         exclude: ^test_notebooks/
 

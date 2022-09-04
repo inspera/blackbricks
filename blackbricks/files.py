@@ -12,13 +12,13 @@ class File:
     path: str
 
     @property
-    def content(self):
+    def content(self) -> str:
         raise NotImplementedError(
             "Do not use this class directly, use one of its subclasses."
         )
 
     @content.setter
-    def content(self, new_content):
+    def content(self, _: str, /) -> None:
         raise NotImplementedError(
             "Do not use this class directly, use one of its subclasses."
         )
@@ -26,12 +26,12 @@ class File:
 
 class LocalFile(File):
     @property
-    def content(self):
+    def content(self) -> str:
         with open(self.path) as f:
             return f.read()
 
     @content.setter
-    def content(self, new_content):
+    def content(self, new_content: str, /) -> None:
         with open(self.path, "w") as f:
             f.write(new_content)
 
@@ -41,15 +41,15 @@ class RemoteNotebook(File):
     api_client: DatabricksAPI
 
     @property
-    def content(self):
+    def content(self) -> str:
         return self.api_client.read_notebook(self.path)
 
     @content.setter
-    def content(self, new_content):
+    def content(self, new_content: str, /) -> None:
         self.api_client.write_notebook(self.path, new_content)
 
 
-def resolve_filepaths(paths: Sequence[str]):
+def resolve_filepaths(paths: Sequence[str]) -> list[str]:
     """Resolve the paths given into valid file names
 
     Directories are recursively added, similarly to how black operates.

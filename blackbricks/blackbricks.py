@@ -12,7 +12,7 @@ CELL_TITLE = "# DBTITLE 1,"
 @dataclass(frozen=True)
 class FormatConfig:
     "Data-only class to hold format configuration options and their defaults."
-    line_length: int = black.DEFAULT_LINE_LENGTH
+    line_length: int = black.const.DEFAULT_LINE_LENGTH
     sql_upper: bool = True
 
 

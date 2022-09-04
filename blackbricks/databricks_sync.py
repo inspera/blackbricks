@@ -1,6 +1,7 @@
 import base64
 import os
 from configparser import ConfigParser
+from typing import Optional
 
 import typer
 from databricks_cli.sdk.api_client import ApiClient
@@ -9,14 +10,17 @@ from databricks_cli.sdk.service import WorkspaceService
 
 class DatabricksAPI:
     def __init__(
-        self, databricks_host: str, databricks_token: str, username: str = None
-    ) -> WorkspaceService:
+        self,
+        databricks_host: str,
+        databricks_token: str,
+        username: Optional[str] = None,
+    ) -> None:
         self.client = WorkspaceService(
             ApiClient(host=databricks_host, token=databricks_token)
         )
         self.username = username
 
-    def __resolve_path(self, path) -> str:
+    def __resolve_path(self, path: str) -> str:
         """
         Resolve path to notebook.
 
@@ -32,7 +36,7 @@ class DatabricksAPI:
             path = f"/Users/{self.username}/{path}"
         return path
 
-    def read_notebook(self, path) -> str:
+    def read_notebook(self, path: str) -> str:
         path = self.__resolve_path(path)
         response = self.client.export_workspace(path, format="SOURCE")
 
@@ -53,7 +57,7 @@ class DatabricksAPI:
         )
 
 
-def get_api_client(profile_name: str):
+def get_api_client(profile_name: str) -> DatabricksAPI:
     config = ConfigParser()
     config_path = os.path.expanduser("~/.databrickscfg")
     try:
