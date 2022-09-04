@@ -52,7 +52,8 @@ profile = "black"
 
 [tool.mypy]
 strict = true
-ignore_missing_imports = true
+mypy_path = "type_stubs"
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

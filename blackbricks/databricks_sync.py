@@ -1,11 +1,24 @@
 import base64
 import os
 from configparser import ConfigParser
-from typing import Optional
+from enum import Enum
+from typing import Optional, TypedDict, cast
 
 import typer
 from databricks_cli.sdk.api_client import ApiClient
 from databricks_cli.sdk.service import WorkspaceService
+
+
+class ObjectType(str, Enum):
+    directory = "DIRECTORY"
+    notebook = "NOTEBOOK"
+    library = "LIBRARY"
+    repo = "REPO"
+
+
+class ListEntry(TypedDict):
+    path: str
+    object_type: ObjectType
 
 
 class DatabricksAPI:
@@ -20,7 +33,7 @@ class DatabricksAPI:
         )
         self.username = username
 
-    def __resolve_path(self, path: str) -> str:
+    def _resolve_path(self, path: str) -> str:
         """
         Resolve path to notebook.
 
@@ -37,17 +50,12 @@ class DatabricksAPI:
         return path
 
     def read_notebook(self, path: str) -> str:
-        path = self.__resolve_path(path)
+        path = self._resolve_path(path)
         response = self.client.export_workspace(path, format="SOURCE")
-
-        assert (
-            response["file_type"] == "py"
-        ), f"Cannot read a non-python notebook: {path}"
-
         return base64.decodebytes(response["content"].encode()).decode()
 
     def write_notebook(self, path: str, content: str) -> None:
-        path = self.__resolve_path(path)
+        path = self._resolve_path(path)
         self.client.import_workspace(
             path,
             format="SOURCE",
@@ -55,6 +63,9 @@ class DatabricksAPI:
             content=base64.b64encode(content.encode()).decode(),
             overwrite=True,
         )
+
+    def list_workspace(self, path: str) -> list[ListEntry]:
+        return cast(list[ListEntry], self.client.list(path)["objects"])
 
 
 def get_api_client(profile_name: str) -> DatabricksAPI:

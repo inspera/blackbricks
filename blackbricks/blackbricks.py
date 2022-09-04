@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Literal, Union
 
 import black
 import sqlparse
@@ -60,7 +61,9 @@ def format_str(content: str, config: FormatConfig = FormatConfig()) -> str:
     return output
 
 
-def _format_sql_cell(cell: str, sql_keyword_case: str = "upper") -> str:
+def _format_sql_cell(
+    cell: str, sql_keyword_case: Union[Literal["upper"], Literal["lower"]] = "upper"
+) -> str:
     """
     Format a MAGIC %sql cell.
 

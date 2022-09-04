@@ -9,7 +9,13 @@ import typer
 from . import __version__
 from .blackbricks import HEADER, FormatConfig, format_str, unified_diff
 from .databricks_sync import get_api_client
-from .files import File, LocalFile, RemoteNotebook, resolve_filepaths
+from .files import (
+    File,
+    LocalFile,
+    RemoteNotebook,
+    resolve_databricks_paths,
+    resolve_filepaths,
+)
 
 app = typer.Typer(add_completion=False)
 
@@ -202,7 +208,10 @@ def main(
     files: list[File]
     if remote_filenames:
         api_client = get_api_client(databricks_profile)
-        files = [RemoteNotebook(fname, api_client) for fname in filenames]
+        files = [
+            RemoteNotebook(fname, api_client)
+            for fname in resolve_databricks_paths(filenames, api_client=api_client)
+        ]
     else:
         files = [LocalFile(fname) for fname in resolve_filepaths(filenames)]
 
