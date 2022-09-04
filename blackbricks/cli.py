@@ -58,10 +58,7 @@ def process_files(
             if diff_output.strip():
                 typer.echo(diff_output)
         elif not check:
-            out_str = ""
-            for line in output.splitlines():
-                out_str += line.rstrip() + "\n"
-            file_.content = out_str
+            file_.content = output
 
             if output != content:
                 typer.secho(f"reformatted {file_.path}", bold=True)
@@ -73,10 +70,11 @@ def process_files(
     )
     changed_number = typer.style(str(n_changed_files), fg=typer.colors.MAGENTA)
     unchanged_echo = (
-        f"{unchanged_number} files {'would be ' if check else ''}left unchanged"
+        f"{unchanged_number} files {'would be ' if check or diff else ''}left unchanged"
     )
     changed_echo = typer.style(
-        f"{changed_number} files {'would be ' if check else ''}reformatted", bold=True
+        f"{changed_number} files {'would be ' if check or diff else ''}reformatted",
+        bold=True,
     )
 
     typer.secho("All done!", bold=True)

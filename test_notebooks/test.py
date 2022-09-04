@@ -35,8 +35,8 @@ def test_func(input_param):
 # MAGIC %sql
 # MAGIC ALTER TABLE this.that
 # MAGIC SET TBLPROPERTIES (delta.autoOptimize = TRUE);
-# MAGIC
-# MAGIC
+# MAGIC 
+# MAGIC 
 # MAGIC ALTER TABLE other.that
 # MAGIC SET TBLPROPERTIES (delta.autoOptimize = TRUE);
 
@@ -64,8 +64,8 @@ def test_func(input_param):
 # MAGIC           foo.fizzbar,
 # MAGIC           foo.bazz
 # MAGIC    FROM cba.tset foo);
-# MAGIC
-# MAGIC
+# MAGIC 
+# MAGIC 
 # MAGIC CREATE OR REPLACE VIEW asd.dsa AS
 # MAGIC   (SELECT bar.foo,
 # MAGIC           COLLECT_SET(bar.fizz)[0],

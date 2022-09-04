@@ -55,10 +55,22 @@ def format_str(content: str, config: FormatConfig = FormatConfig()) -> str:
             "".join(line.rstrip() + "\n" for line in cell.splitlines()).rstrip()
             for cell in output_cells
         ).rstrip()
-        + "\n"
     )
 
-    return output
+    # Databricks adds a space after '# MAGIC', regardless of wheter this constitutes
+    # trailing whitespace. To avoid perpetual differences, blackbricks also adds this
+    # extra whitespace. This is only added if the line does not contain anything else.
+    # In all other cases, blackbricks will remove trailing whitespace.
+    output_ws_normalized = ""
+    for line in output.splitlines():
+        line = line.rstrip()
+
+        if line == "# MAGIC":
+            line += " "
+
+        output_ws_normalized += line + "\n"
+
+    return output_ws_normalized.strip()
 
 
 def _format_sql_cell(
