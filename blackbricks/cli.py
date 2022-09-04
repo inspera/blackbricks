@@ -22,14 +22,21 @@ def process_files(
 ):
     no_change = True
     n_changed_files = 0
+    n_notebooks = 0
 
     for file_ in files:
-        content = file_.content
+
+        try:
+            content = file_.content
+        except UnicodeDecodeError:
+            # File is not a text file. Probably a binary file. Skip.
+            continue
 
         if not content.lstrip() or HEADER not in content.lstrip().splitlines()[0]:
             # Not a Databricks notebook - skip
             continue
 
+        n_notebooks += 1
         output = format_str(content, config=format_config)
 
         no_change &= output == content
@@ -56,7 +63,7 @@ def process_files(
             typer.secho(f"would reformat {file_.path}", bold=True)
 
     unchanged_number = typer.style(
-        str(len(files) - n_changed_files), fg=typer.colors.GREEN
+        str(n_notebooks - n_changed_files), fg=typer.colors.GREEN
     )
     changed_number = typer.style(str(n_changed_files), fg=typer.colors.MAGENTA)
     unchanged_echo = (
@@ -73,7 +80,7 @@ def process_files(
                 lambda s: bool(s),
                 [
                     changed_echo if n_changed_files else "",
-                    unchanged_echo if len(files) - n_changed_files > 0 else "",
+                    unchanged_echo if n_notebooks - n_changed_files > 0 else "",
                 ],
             )
         )
