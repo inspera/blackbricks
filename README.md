@@ -196,3 +196,8 @@ $ blackbricks --remote /Repos/username@example.com/repo-name/notebook.py  # Targ
 This means you had an old version of `click` installed from before, and your installation didn't upgrade it
 automatically. Updating your installation should do the trick, e.g. `pip install -U blackbricks` or similar depending on
 your installation method of choice.
+
+
+### Shell commands like `!ls` throws an error
+
+See #21.
