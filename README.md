@@ -64,8 +64,6 @@ $ blackbricks --remote /Users/username/notebook.py
 $ blackbricks --remote /Repos/username/repo-name/notebook.py
 ```
 
-When working on remote files, you _can not_ add whole directories.
-
 ### Full usage
 
 ```text
