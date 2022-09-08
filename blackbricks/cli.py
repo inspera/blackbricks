@@ -92,7 +92,7 @@ def process_files(
     return n_changed_files
 
 
-def mutually_exclusive(names: list[str], values: list[bool]) -> None:
+def mutually_exclusive(names: List[str], values: List[bool]) -> None:
     if sum(values) > 1:
         names_formatted = ", ".join(
             typer.style(name, fg=typer.colors.CYAN) for name in names
@@ -203,7 +203,7 @@ def main(
         typer.secho("No Path provided. Nothing to do.", bold=True)
         raise typer.Exit()
 
-    files: list[File]
+    files: List[File]
     if remote_filenames:
         api_client = get_api_client(databricks_profile)
         files = [

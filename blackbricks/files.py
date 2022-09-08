@@ -1,5 +1,6 @@
 import os
 from dataclasses import dataclass
+from typing import List
 
 import typer
 
@@ -48,7 +49,7 @@ class RemoteNotebook(File):
         self.api_client.write_notebook(self.path, new_content)
 
 
-def resolve_filepaths(paths: list[str]) -> list[str]:
+def resolve_filepaths(paths: List[str]) -> List[str]:
     """Resolve the paths given into valid file names
 
     Directories are recursively added, similarly to how black operates.
@@ -82,8 +83,8 @@ def resolve_filepaths(paths: list[str]) -> list[str]:
 
 
 def resolve_databricks_paths(
-    paths: list[str], *, api_client: DatabricksAPI
-) -> list[str]:
+    paths: List[str], *, api_client: DatabricksAPI
+) -> List[str]:
     """Resolve the remote paths given into valid file names
 
     Directories are recursively added, similarly to how black operates.

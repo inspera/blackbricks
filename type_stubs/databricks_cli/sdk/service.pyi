@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Literal, TypedDict
+from typing import List, Literal, TypedDict
 
 from _typeshed import Incomplete
 
@@ -16,7 +16,7 @@ class ListEntry(TypedDict):
     object_type: ObjectType
 
 class ListReponse(TypedDict):
-    objects: list[ListEntry]
+    objects: List[ListEntry]
 
 class ExportResponse(TypedDict):
     content: str

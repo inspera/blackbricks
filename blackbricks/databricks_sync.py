@@ -2,7 +2,7 @@ import base64
 import os
 from configparser import ConfigParser
 from enum import Enum
-from typing import Optional, TypedDict, cast
+from typing import List, Optional, TypedDict, cast
 
 import typer
 from databricks_cli.sdk.api_client import ApiClient
@@ -64,8 +64,8 @@ class DatabricksAPI:
             overwrite=True,
         )
 
-    def list_workspace(self, path: str) -> list[ListEntry]:
-        return cast(list[ListEntry], self.client.list(path)["objects"])
+    def list_workspace(self, path: str) -> List[ListEntry]:
+        return cast(List[ListEntry], self.client.list(path)["objects"])
 
 
 def get_api_client(profile_name: str) -> DatabricksAPI:
