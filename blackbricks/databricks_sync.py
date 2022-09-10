@@ -9,10 +9,14 @@ from databricks_cli.sdk.service import WorkspaceService
 
 class DatabricksAPI:
     def __init__(
-        self, databricks_host: str, databricks_token: str, databricks_insecure: bool, username: str = None
+        self,
+        databricks_host: str,
+        databricks_token: str,
+        verify_ssl: bool = True,
+        username: str = None,
     ) -> WorkspaceService:
         self.client = WorkspaceService(
-            ApiClient(host=databricks_host, token=databricks_token, verify=databricks_insecure)
+            ApiClient(host=databricks_host, token=databricks_token, verify=verify_ssl)
         )
         self.username = username
 
@@ -97,7 +101,7 @@ def get_api_client(profile_name: str):
     username = config.get(profile_name, "username", fallback=None)
     token = config.get(profile_name, "token", fallback=None)
     password = config.get(profile_name, "password", fallback=None)
-    databricks_insecure = config.get(profile_name, "insecure", fallback=False)
+    insecure = config.get(profile_name, "insecure", fallback=None)
     credentials = token if token is not None else password
 
     # Handle no username:
@@ -140,7 +144,9 @@ def get_api_client(profile_name: str):
         if token != config.defaults().get("token"):
             credentials = token
 
-    #databricks ask if we want to proceed insecurely, requests ask if we want to verify.
     return DatabricksAPI(
-        databricks_host=host, databricks_token=credentials, username=username, databricks_insecure= not databricks_insecure
+        databricks_host=host,
+        databricks_token=credentials,
+        username=username,
+        verify_ssl=insecure is None,
     )
