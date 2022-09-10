@@ -188,6 +188,10 @@ $ blackbricks --remote --profile OTHERPROFILE /Users/name.user@example.com/noteb
 $ blackbricks --remote --profile OTHERPROFILE notebook.py  # Equivalent to the above.
 ```
 
+### Can you run blackbricks while using databricks in the browser?
+
+See https://github.com/inspera/blackbricks/issues/27.
+
 ### I get an error: `TypeError: init() got an unexpected keyword argument 'no_args_is_help'`
 
 This means you had an old version of `click` installed from before, and your installation didn't upgrade it automatically. Updating your installation should do the trick, e.g. `pip install -U blackbricks` or similar depending on your installation method of choice.
