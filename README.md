@@ -191,6 +191,10 @@ $ blackbricks --remote --profile OTHERPROFILE notebook.py  # Equivalent to the a
 $ blackbricks --remote /Repos/username@example.com/repo-name/notebook.py  # Targeting notebook in a Repo
 ```
 
+### Can you run blackbricks while using databricks in the browser?
+
+See https://github.com/inspera/blackbricks/issues/27.
+
 ### I get an error: `TypeError: init() got an unexpected keyword argument 'no_args_is_help'`
 
 This means you had an old version of `click` installed from before, and your installation didn't upgrade it

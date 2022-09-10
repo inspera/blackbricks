@@ -27,9 +27,10 @@ class DatabricksAPI:
         databricks_host: str,
         databricks_token: str,
         username: Optional[str] = None,
+        verify_ssl: bool = True,
     ) -> None:
         self.client = WorkspaceService(
-            ApiClient(host=databricks_host, token=databricks_token)
+            ApiClient(host=databricks_host, token=databricks_token, verify=verify_ssl)
         )
         self.username = username
 
@@ -112,6 +113,7 @@ def get_api_client(profile_name: str) -> DatabricksAPI:
     username = config.get(profile_name, "username", fallback=None)
     token = config.get(profile_name, "token", fallback=None)
     password = config.get(profile_name, "password", fallback=None)
+    insecure = config.get(profile_name, "insecure", fallback=None)
     credentials = token if token is not None else password
 
     # Handle no username:
@@ -155,5 +157,8 @@ def get_api_client(profile_name: str) -> DatabricksAPI:
             credentials = token
 
     return DatabricksAPI(
-        databricks_host=host, databricks_token=credentials, username=username
+        databricks_host=host,
+        databricks_token=credentials,
+        username=username,
+        verify_ssl=insecure is None,
     )
