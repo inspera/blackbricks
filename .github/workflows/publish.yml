@@ -1,0 +1,14 @@
+name: Publish version to PyPI
+on:
+  push:
+    tags:
+      - "*.*.*"
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build and publish to pypi
+        uses: JRubics/poetry-publish@v1.13
+        with:
+          pypi_token: ${{ secrets.PYPI_PASSWORD }}
