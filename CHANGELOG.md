@@ -3,7 +3,7 @@
 ### Fix
 
 - respect `insecure` option in .databrickscfg (#28)
-- restore Python 3.8 compatability
+- restore Python 3.8 compatibility
 - handle trailing whitespace the same as Databricks
 - add strict mypy typing to project
 - ignore non-text files
@@ -15,9 +15,9 @@
 
 ### BREAKING CHANGE
 
-- Obviously. No longer required due to Databricks adding
-option for 4 space indentation. So in keeping with Black's philosophy,
-we don't keep options that are not needed.
+Removal of two-space indentation as an option and the change to forcing the PEP-8 compliant four-space indentation.
+
+See [#25](https://github.com/inspera/blackbricks/pull/25) for background.
 
 ## 0.7.0 (2022-09-03)
 
