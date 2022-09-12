@@ -1,7 +1,7 @@
 import os
 import textwrap
 import warnings
-from typing import List, Sequence
+from typing import List, NoReturn, Optional, Sequence
 
 import black
 import typer
@@ -9,7 +9,13 @@ import typer
 from . import __version__
 from .blackbricks import HEADER, FormatConfig, format_str, unified_diff
 from .databricks_sync import get_api_client
-from .files import File, LocalFile, RemoteNotebook, resolve_filepaths
+from .files import (
+    File,
+    LocalFile,
+    RemoteNotebook,
+    resolve_databricks_paths,
+    resolve_filepaths,
+)
 
 app = typer.Typer(add_completion=False)
 
@@ -19,17 +25,24 @@ def process_files(
     format_config: FormatConfig = FormatConfig(),
     diff: bool = False,
     check: bool = False,
-):
+) -> int:
     no_change = True
     n_changed_files = 0
+    n_notebooks = 0
 
     for file_ in files:
-        content = file_.content
+
+        try:
+            content = file_.content
+        except UnicodeDecodeError:
+            # File is not a text file. Probably a binary file. Skip.
+            continue
 
         if not content.lstrip() or HEADER not in content.lstrip().splitlines()[0]:
             # Not a Databricks notebook - skip
             continue
 
+        n_notebooks += 1
         output = format_str(content, config=format_config)
 
         no_change &= output == content
@@ -45,10 +58,7 @@ def process_files(
             if diff_output.strip():
                 typer.echo(diff_output)
         elif not check:
-            out_str = ""
-            for line in output.splitlines():
-                out_str += line.rstrip() + "\n"
-            file_.content = out_str
+            file_.content = output
 
             if output != content:
                 typer.secho(f"reformatted {file_.path}", bold=True)
@@ -56,14 +66,15 @@ def process_files(
             typer.secho(f"would reformat {file_.path}", bold=True)
 
     unchanged_number = typer.style(
-        str(len(files) - n_changed_files), fg=typer.colors.GREEN
+        str(n_notebooks - n_changed_files), fg=typer.colors.GREEN
     )
     changed_number = typer.style(str(n_changed_files), fg=typer.colors.MAGENTA)
     unchanged_echo = (
-        f"{unchanged_number} files {'would be ' if check else ''}left unchanged"
+        f"{unchanged_number} files {'would be ' if check or diff else ''}left unchanged"
     )
     changed_echo = typer.style(
-        f"{changed_number} files {'would be ' if check else ''}reformatted", bold=True
+        f"{changed_number} files {'would be ' if check or diff else ''}reformatted",
+        bold=True,
     )
 
     typer.secho("All done!", bold=True)
@@ -73,7 +84,7 @@ def process_files(
                 lambda s: bool(s),
                 [
                     changed_echo if n_changed_files else "",
-                    unchanged_echo if len(files) - n_changed_files > 0 else "",
+                    unchanged_echo if n_notebooks - n_changed_files > 0 else "",
                 ],
             )
         )
@@ -81,17 +92,19 @@ def process_files(
     return n_changed_files
 
 
-def mutually_exclusive(names, values):
+def mutually_exclusive(names: List[str], values: List[bool]) -> None:
     if sum(values) > 1:
-        names = ", ".join(typer.style(name, fg=typer.colors.CYAN) for name in names)
+        names_formatted = ", ".join(
+            typer.style(name, fg=typer.colors.CYAN) for name in names
+        )
         typer.echo(
             f"{typer.style('Error:', fg=typer.colors.RED)} "
-            + f"Only one of {names} may be use at the same time."
+            + f"Only one of {names_formatted} may be use at the same time."
         )
         raise typer.Exit(1)
 
 
-def version_callback(version_requested: bool):
+def version_callback(version_requested: bool) -> None:
     "Display versioin information and exit"
     if version_requested:
         version = typer.style(__version__, fg=typer.colors.GREEN)
@@ -119,15 +132,15 @@ def main(
         help="If using --remote, which Databricks profile to use.",
     ),
     line_length: int = typer.Option(
-        black.DEFAULT_LINE_LENGTH, help="How many characters per line to allow."
+        black.const.DEFAULT_LINE_LENGTH, help="How many characters per line to allow."
     ),
     sql_upper: bool = typer.Option(
         True, help="SQL keywords should be UPPERCASE or lowercase."
     ),
-    indent_with_two_spaces: bool = typer.Option(
-        True,
-        help="DEPRECATED: Use two spaces for indentation in Python cells instead of Black's "
-        "default of four. Databricks uses two spaces.",
+    no_indent_with_two_spaces: Optional[bool] = typer.Option(
+        None,
+        "--no-indent-with-two-spaces",
+        help="DEPRECATED: Blackbricks now uses 4 spaces for indentation by default. This option will be removed in future versions.",
     ),
     check: bool = typer.Option(
         False,
@@ -149,7 +162,7 @@ def main(
         callback=version_callback,
         help="Display version information and exit.",
     ),
-):
+) -> NoReturn:
     """
     Formatting tool for Databricks python notebooks.
 
@@ -169,14 +182,15 @@ def main(
 
       - File paths should start with `/`. Otherwise they are interpreted as relative to `/Users/username`, where `username` is the username specified in the Databricks profile used.
     """
-    if indent_with_two_spaces:
+    assert not version, "If version is set, we don't get here."
+
+    if no_indent_with_two_spaces is not None:
         warnings.simplefilter("always", DeprecationWarning)
         warnings.warn(
             textwrap.dedent(
                 """
-                The option to use two-space indentation will be removed in version 1.0 of blackbricks.
-                Consider downgrading to version 0.6.7 to keep using two-space indentation without seeing
-                this warning, or switch to using four-space indentation.
+                Blackbricks now uses 4 spaces for indentation by default.
+                Please stop using the `--no-indent-with-two-spaces` option, as it will be removed in future versions.
                 """
             ),
             category=DeprecationWarning,
@@ -189,19 +203,19 @@ def main(
         typer.secho("No Path provided. Nothing to do.", bold=True)
         raise typer.Exit()
 
+    files: List[File]
     if remote_filenames:
         api_client = get_api_client(databricks_profile)
-        files = [RemoteNotebook(fname, api_client) for fname in filenames]
+        files = [
+            RemoteNotebook(fname, api_client)
+            for fname in resolve_databricks_paths(filenames, api_client=api_client)
+        ]
     else:
         files = [LocalFile(fname) for fname in resolve_filepaths(filenames)]
 
     n_changed_files = process_files(
         files,
-        format_config=FormatConfig(
-            line_length=line_length,
-            sql_upper=sql_upper,
-            two_space_indent=indent_with_two_spaces,
-        ),
+        format_config=FormatConfig(line_length=line_length, sql_upper=sql_upper),
         diff=diff,
         check=check,
     )

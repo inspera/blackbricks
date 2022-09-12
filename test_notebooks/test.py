@@ -7,15 +7,17 @@ sqlContext = SQLContext(spark)
 
 # DBTITLE 1,Title for a python cell
 dw_management = (
-  spark.table("this.that").select("some_id").join(spark.table("other.that"), "other_id")
+    spark.table("this.that")
+    .select("some_id")
+    .join(spark.table("other.that"), "other_id")
 )
 
 
 def test_func(input_param):
-  """
-  :param   input_param: input
-  """
-  return None
+    """
+    :param   input_param: input
+    """
+    return None
 
 # COMMAND ----------
 
@@ -25,11 +27,16 @@ def test_func(input_param):
 
 # COMMAND ----------
 
+# MAGIC %sh
+# MAGIC ls -l
+
+# COMMAND ----------
+
 # MAGIC %sql
 # MAGIC ALTER TABLE this.that
 # MAGIC SET TBLPROPERTIES (delta.autoOptimize = TRUE);
-# MAGIC
-# MAGIC
+# MAGIC 
+# MAGIC 
 # MAGIC ALTER TABLE other.that
 # MAGIC SET TBLPROPERTIES (delta.autoOptimize = TRUE);
 
@@ -57,8 +64,8 @@ def test_func(input_param):
 # MAGIC           foo.fizzbar,
 # MAGIC           foo.bazz
 # MAGIC    FROM cba.tset foo);
-# MAGIC
-# MAGIC
+# MAGIC 
+# MAGIC 
 # MAGIC CREATE OR REPLACE VIEW asd.dsa AS
 # MAGIC   (SELECT bar.foo,
 # MAGIC           COLLECT_SET(bar.fizz)[0],

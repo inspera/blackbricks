@@ -1,10 +1,24 @@
 import base64
 import os
 from configparser import ConfigParser
+from enum import Enum
+from typing import List, Optional, TypedDict, cast
 
 import typer
 from databricks_cli.sdk.api_client import ApiClient
 from databricks_cli.sdk.service import WorkspaceService
+
+
+class ObjectType(str, Enum):
+    directory = "DIRECTORY"
+    notebook = "NOTEBOOK"
+    library = "LIBRARY"
+    repo = "REPO"
+
+
+class ListEntry(TypedDict):
+    path: str
+    object_type: ObjectType
 
 
 class DatabricksAPI:
@@ -12,15 +26,15 @@ class DatabricksAPI:
         self,
         databricks_host: str,
         databricks_token: str,
+        username: Optional[str] = None,
         verify_ssl: bool = True,
-        username: str = None,
-    ) -> WorkspaceService:
+    ) -> None:
         self.client = WorkspaceService(
             ApiClient(host=databricks_host, token=databricks_token, verify=verify_ssl)
         )
         self.username = username
 
-    def __resolve_path(self, path) -> str:
+    def _resolve_path(self, path: str) -> str:
         """
         Resolve path to notebook.
 
@@ -36,18 +50,13 @@ class DatabricksAPI:
             path = f"/Users/{self.username}/{path}"
         return path
 
-    def read_notebook(self, path) -> str:
-        path = self.__resolve_path(path)
+    def read_notebook(self, path: str) -> str:
+        path = self._resolve_path(path)
         response = self.client.export_workspace(path, format="SOURCE")
-
-        assert (
-            response["file_type"] == "py"
-        ), f"Cannot read a non-python notebook: {path}"
-
         return base64.decodebytes(response["content"].encode()).decode()
 
     def write_notebook(self, path: str, content: str) -> None:
-        path = self.__resolve_path(path)
+        path = self._resolve_path(path)
         self.client.import_workspace(
             path,
             format="SOURCE",
@@ -56,8 +65,11 @@ class DatabricksAPI:
             overwrite=True,
         )
 
+    def list_workspace(self, path: str) -> List[ListEntry]:
+        return cast(List[ListEntry], self.client.list(path)["objects"])
 
-def get_api_client(profile_name: str):
+
+def get_api_client(profile_name: str) -> DatabricksAPI:
     config = ConfigParser()
     config_path = os.path.expanduser("~/.databrickscfg")
     try:

@@ -11,6 +11,16 @@ A formatting tool for your Databricks notebooks.
 - Python cells are formatted with [black](https://github.com/psf/black)
 - SQL cells are formatted with [sqlparse](https://github.com/andialbrecht/sqlparse)
 
+## Breaking changes with version 1.0
+
+Earlier versions of blackbricks applied a patched version of black in order to allow two-space indentation. This was
+done because Databricks used two-space indentation, and did not allow you to change that. 
+
+Since then, Databricks has added the option to choose. Because you can now choose, blackbricks re-joins black in being
+uncompromising, and since version 1.0 you can no longer choose anything but 4 space indentation.
+
+If you _must_ keep using two-space indentation, then stick to versions `<1.0`.
+
 ## Table of Contents
 
 * [Installation](#installation)
@@ -21,102 +31,92 @@ A formatting tool for your Databricks notebooks.
 
 ## Installation
 
-Install:
+While you can use `pip` directly, you should prefer using [pipx](https://pypa.github.io/pipx/).
 
 ```bash
-$ pip install blackbricks
+$ pipx install blackbricks
 ```
 
 You probably also want to have installed the `databricks-cli`, in order to use `blackbricks` directly on your notebooks.
 
 ``` bash
-$ pip install databricks-cli
+$ pipx install databricks-cli
 $ databricks configure  # Required in order to use `blackbricks` on remote notebooks.
 ```
 
 ## Usage
 You can use `blackbricks` on Python notebook files stored locally, or directly on the notebooks stored in Databricks. 
 
-For the most part, `blackbricks` operates very similary to `black`.
+For the most part, `blackbricks` operates very similarly to `black`.
 
 ``` bash
 $ blackbricks notebook1.py notebook2.py  # Formats both notebooks.
 $ blackbricks notebook_directory/  # Formats every notebook under the directory (recursively).
 ```
-An important difference is that `blackbricks` will ignore any file that does not contain the `# Databricks notebook source` header on the first line. Databricks adds this line to all Python notebooks. This means you can happily run `blackbricks` on a directory with both notebooks and regular Python files, and `blackbricks` won't touch the latter.
+An important difference is that `blackbricks` will ignore any file that does not contain the `# Databricks notebook
+source` header on the first line. Databricks adds this line to all Python notebooks. This means you can happily run
+`blackbricks` on a directory with both notebooks and regular Python files, and `blackbricks` won't touch the latter.
 
 If you specify the `-r` or `--remote` flag, `blackbricks` will work directly on your notebooks stored in Databricks.
 
 ``` bash
 $ blackbricks --remote /Users/username/notebook.py
+$ blackbricks --remote /Repos/username/repo-name/notebook.py
 ```
-
-When working on remote files, you _can not_ add whole directories.
 
 ### Full usage
 
 ```text
-$ blackbricks --help
-Usage: blackbricks [OPTIONS] [FILENAMES]...
+$ poetry run blackbricks --help
 
-  Formatting tool for Databricks python notebooks.
+ Usage: blackbricks [OPTIONS] [FILENAMES]...
 
-  Python cells are formatted using `black`, and SQL cells are formatted by
-  `sqlparse`.
+ Formatting tool for Databricks python notebooks.
+ Python cells are formatted using `black`, and SQL cells are formatted by `sqlparse`.
+ Local files (without the `--remote` option):
+ - Only files that look like Databricks (Python) notebooks will be processed. That is,
+ they must start with the header `# Databricks notebook source`
+ - If you specify a directory as one of the file names, all files in that directory will
+ be added, including any subdirectory.
+ Remote files (with the `--remote` option):
+ - Make sure you have installed the Databricks CLI (``pip install databricks_cli``)
+ - Make sure you have configured at least one profile (`databricks configure`). Check the
+ file `~/.databrickscfg` if you are not sure.
+ - File paths should start with `/`. Otherwise they are interpreted as relative to
+ `/Users/username`, where `username` is the username specified in the Databricks profile
+ used.
 
-  Local files (without the `--remote` option):
-
-    - Only files that look like Databricks (Python) notebooks will be
-    processed. That is, they must start with the header `# Databricks
-    notebook source`
-
-    - If you specify a directory as one of the file names, all files in that
-    directory will be added, including any subdirectory.
-
-  Remote files (with the `--remote` option):
-
-    - Make sure you have installed the Databricks CLI (``pip install
-    databricks_cli``)
-
-    - Make sure you have configured at least one profile (`databricks
-    configure`). Check the file `~/.databrickscfg` if you are not sure.
-
-    - File paths should start with `/`. Otherwise they are interpreted as
-    relative to `/Users/username`, where `username` is the username
-    specified in the Databricks profile used.
-
-Arguments:
-  [FILENAMES]...  Path to the notebook(s) to format.
-
-Options:
-  -r, --remote                    If this option is used, all filenames are
-                                  treated as paths to notebooks on your
-                                  Databricks host (i.e. not local files).
-                                  [default: False]
-
-  -p, --profile NAME              If using --remote, which Databricks profile
-                                  to use.  [default: DEFAULT]
-
-  --line-length INTEGER           How many characters per line to allow.
-                                  [default: 88]
-
-  --sql-upper / --no-sql-upper    SQL keywords should be UPPERCASE or
-                                  lowercase.  [default: True]
-
-  --indent-with-two-spaces / --no-indent-with-two-spaces
-                                  Use two spaces for indentation in Python
-                                  cells instead of Black's default of four.
-                                  Databricks uses two spaces.  [default: True]
-
-  --check                         Don't write the files back, just return the
-                                  status. Return code 0 means nothing would
-                                  change.
-
-  --diff                          Don't write the files back, just output a
-                                  diff for each file on stdout.
-
-  --version                       Display version information and exit.
-  --help                          Show this message and exit.
+╭─ Arguments ────────────────────────────────────────────────────────────────────────────╮
+│   filenames      [FILENAMES]...  Path to the notebook(s) to format. [default: None]    │
+╰────────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ──────────────────────────────────────────────────────────────────────────────╮
+│ --remote                     -r                             If this option is used,    │
+│                                                             all filenames are treated  │
+│                                                             as paths to notebooks on   │
+│                                                             your Databricks host (i.e. │
+│                                                             not local files).          │
+│ --profile                    -p                    NAME     If using --remote, which   │
+│                                                             Databricks profile to use. │
+│                                                             [default: DEFAULT]         │
+│ --line-length                                      INTEGER  How many characters per    │
+│                                                             line to allow.             │
+│                                                             [default: 88]              │
+│ --sql-upper                      --no-sql-upper             SQL keywords should be     │
+│                                                             UPPERCASE or lowercase.    │
+│                                                             [default: sql-upper]       │
+│ --check                                                     Don't write the files      │
+│                                                             back, just return the      │
+│                                                             status. Return code 0      │
+│                                                             means nothing would        │
+│                                                             change.                    │
+│ --diff                                                      Don't write the files      │
+│                                                             back, just output a diff   │
+│                                                             for each file on stdout.   │
+│ --version                                                   Display version            │
+│                                                             information and exit.      │
+│ --help                                                      Show this message and      │
+│                                                             exit.                      │
+╰────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
 
@@ -129,11 +129,11 @@ wish):
 
 ```yaml
 repos:
--   repo: https://github.com/bsamseth/blackbricks
-    rev: 0.6.0
+-   repo: https://github.com/inspera/blackbricks
+    rev: 1.0.0
     hooks:
     - id: blackbricks
-      args: [--line-length=120, --indent-with-two-spaces]
+      args: [--line-length=120]
 ```
 
 Set the `rev` attribute to the most recent version of `blackbricks`.
@@ -141,13 +141,16 @@ The `args` are optional and can be used to set any of `blackbricks` options.
 
 ## Contributing
 
-If you find blackbricks useful, feel free to say so with a star. If you think it is utterly broken, you are more than welcome to contribute improvements. Please open an issue first to discuss what you want added/fixed. Unless you are just adding tests. In that case your pull request is extremely likely to be merged right away.
+If you find blackbricks useful, feel free to say so with a star. If you think it is utterly broken, you are more than
+welcome to contribute improvements. Please open an issue first to discuss what you want added/fixed. Unless you are just
+adding tests. In that case your pull request is extremely likely to be merged right away.
 
 ## FAQ
 
 ### Can I disable SQL formatting?
 
-Sure! Certain SQL statements might not be parsed and indented properly by `sqlparse`, and the result can be jumbled formatting. You can disable SQL formatting for a cell by adding `-- nofmt` to the very first line of a cell:
+Sure! Certain SQL statements might not be parsed and indented properly by `sqlparse`, and the result can be jumbled
+formatting. You can disable SQL formatting for a cell by adding `-- nofmt` to the very first line of a cell:
 
 ```sql
 %sql  -- nofmt
@@ -159,9 +162,8 @@ select this,
 
 ### How do I use `blackbricks` on my Databricks notebooks?
 
-First, make sure you have set up `databricks-cli` on your system (see
-[installation](#installation)), and that you have at least one profile setup in
-`~/.databrickscfg`. As an example:
+First, make sure you have set up `databricks-cli` on your system (see [installation](#installation)), and that you have
+at least one profile setup in `~/.databrickscfg`. As an example:
 
 ```cfg
 # File: ~/.databrickscfg
@@ -186,6 +188,7 @@ $ blackbricks --remote /Users/username@example.com/notebook.py  # Uses DEFAULT p
 $ blackbricks --remote notebook.py  # Equivalent to the above.
 $ blackbricks --remote --profile OTHERPROFILE /Users/name.user@example.com/notebook.py
 $ blackbricks --remote --profile OTHERPROFILE notebook.py  # Equivalent to the above.
+$ blackbricks --remote /Repos/username@example.com/repo-name/notebook.py  # Targeting notebook in a Repo
 ```
 
 ### Can you run blackbricks while using databricks in the browser?
@@ -194,4 +197,11 @@ See https://github.com/inspera/blackbricks/issues/27.
 
 ### I get an error: `TypeError: init() got an unexpected keyword argument 'no_args_is_help'`
 
-This means you had an old version of `click` installed from before, and your installation didn't upgrade it automatically. Updating your installation should do the trick, e.g. `pip install -U blackbricks` or similar depending on your installation method of choice.
+This means you had an old version of `click` installed from before, and your installation didn't upgrade it
+automatically. Updating your installation should do the trick, e.g. `pip install -U blackbricks` or similar depending on
+your installation method of choice.
+
+
+### Shell commands like `!ls` throws an error
+
+See #21.
