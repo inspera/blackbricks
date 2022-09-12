@@ -1,3 +1,24 @@
+## 1.0.0 (2022-09-12)
+
+### Fix
+
+- respect `insecure` option in .databrickscfg (#28)
+- restore Python 3.8 compatability
+- handle trailing whitespace the same as Databricks
+- add strict mypy typing to project
+- ignore non-text files
+
+### Feat
+
+- recursively discover remote notebooks
+- remove option for two-space indentation
+
+### BREAKING CHANGE
+
+- Obviously. No longer required due to Databricks adding
+option for 4 space indentation. So in keeping with Black's philosophy,
+we don't keep options that are not needed.
+
 ## 0.7.0 (2022-09-03)
 
 ### Feat
