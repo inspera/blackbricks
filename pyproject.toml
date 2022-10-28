@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "blackbricks"
-version = "1.0.0"
+version = "1.0.1"
 description = "Black for Databricks notebooks"
 authors = ["Bendik Samseth <bendik.samseth@inspera.no>"]
 license = "MIT"
@@ -41,7 +41,7 @@ mypy = "^0.971"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "1.0.0"
+version = "1.0.1"
 tag_format = "$version"
 version_files = [
     "blackbricks/__init__.py:version",

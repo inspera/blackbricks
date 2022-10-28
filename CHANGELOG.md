@@ -1,3 +1,7 @@
+## 1.0.1 (2022-10-28)
+
+Non-functional patch with minor documentation updates.
+
 ## 1.0.0 (2022-09-12)
 
 ### Fix
