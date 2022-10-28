@@ -191,9 +191,11 @@ $ blackbricks --remote --profile OTHERPROFILE notebook.py  # Equivalent to the a
 $ blackbricks --remote /Repos/username@example.com/repo-name/notebook.py  # Targeting notebook in a Repo
 ```
 
-### Can you run blackbricks while using databricks in the browser?
+### Can you run blackbricks while using Databricks in the browser?
 
-See https://github.com/inspera/blackbricks/issues/27.
+No. See https://github.com/inspera/blackbricks/issues/27 for why.
+
+However, Databricks now allows you to [format your notebooks with black directly](https://docs.databricks.com/notebooks/notebooks-use.html#format-code-cells).
 
 ### I get an error: `TypeError: init() got an unexpected keyword argument 'no_args_is_help'`
 
@@ -204,4 +206,4 @@ your installation method of choice.
 
 ### Shell commands like `!ls` throws an error
 
-See #21.
+See https://github.com/inspera/blackbricks/issues/21.
