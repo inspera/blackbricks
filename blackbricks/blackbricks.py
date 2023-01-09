@@ -95,14 +95,17 @@ def _format_sql_cell(
     if NOFMT in cell.strip().splitlines()[0]:
         return title_line + cell
 
-    magics = []
     sql_lines = []
     for line in cell.strip().splitlines():
         if line.strip().startswith("# MAGIC %sql"):
-            continue
+            if line.strip().endswith("# MAGIC %sql"):
+                continue
+            else:
+                sql = line.strip().replace("# MAGIC %sql", "")
+                sql_lines.append(sql.strip())
+                continue
         words = line.split()
         magic, sql = words[:2], words[2:]
-        magics.append(magic)
         sql_lines.append(" ".join(sql).strip())
 
     return (
@@ -111,7 +114,7 @@ def _format_sql_cell(
         + "\n".join(
             f"# MAGIC {sql}"
             for sql in sqlparse.format(
-                "\n".join(sql_lines), reindent=True, keyword_case=sql_keyword_case
+                "\n" + "\n".join(sql_lines), reindent=True, keyword_case=sql_keyword_case
             ).splitlines()
         )
     )
