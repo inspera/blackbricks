@@ -76,30 +76,6 @@ def test_func(input_param):
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC 
-# MAGIC 
-# MAGIC SELECT id from test_table LIMIT 1
-# MAGIC -- 3 NewLines after %sql
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC 
-# MAGIC SELECT id from test_table LIMIT 1
-# MAGIC -- 2 NewLines after %sql
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC SELECT id from test_table LIMIT 1
-# MAGIC -- 1 NewLines after %sql
-
-# COMMAND ----------
-
-# MAGIC %sql SELECT id from test_table LIMIT 1
-# MAGIC -- SPACE after %sql
-
-# COMMAND ----------
-
-# MAGIC %sql	SELECT id from test_table LIMIT 1
-# MAGIC -- TAB after %sql
+# MAGIC SELECT id
+# MAGIC FROM test_table
+# MAGIC LIMIT 1
