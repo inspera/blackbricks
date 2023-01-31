@@ -72,3 +72,10 @@ def test_func(input_param):
 # MAGIC           FIRST(bar.baz)
 # MAGIC    FROM dsa.asd bar
 # MAGIC    GROUP BY bar.fizzbuzz);
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT id
+# MAGIC FROM test_table
+# MAGIC LIMIT 1
