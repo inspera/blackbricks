@@ -1,3 +1,9 @@
+## 1.0.4 (2023-01-31)
+
+### Fix
+
+- avoid failing on quoted cell dividers
+
 ## 1.0.3 (2023-01-31)
 
 Resolve buf where blackbricks removed sql code on the same line as the `%sql` magic. See #32.
