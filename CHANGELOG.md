@@ -1,3 +1,7 @@
+## 1.0.3 (2023-01-31)
+
+Resolve buf where blackbricks removed sql code on the same line as the `%sql` magic. See #32.
+
 ## 1.0.2 (2023-01-10)
 
 Bumping dependencies to resolve dependabot alert. See #30.
