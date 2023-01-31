@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 from typing import Literal, Union
 
@@ -28,7 +29,8 @@ def format_str(content: str, config: FormatConfig = FormatConfig()) -> str:
     :param config: An object holding the desired formatting options.
     :return: The content of the file, formatted according to the configuration.
     """
-    cells = content.replace(HEADER, "", 1).split(COMMAND)
+    content = content.replace(HEADER, "", 1)
+    cells = re.split(f"^{COMMAND}.*$", content, flags=re.MULTILINE)
 
     output_cells = []
     for cell in cells:
