@@ -42,10 +42,32 @@ class RemoteNotebook(File):
 
     @property
     def content(self) -> str:
-        return self.api_client.read_notebook(self.path)
+        """
+        Get the content of the notebook as a string.
+
+        Note: Databricks will not include a trailing newlines from a notebook.
+        That is, even if you checkout a notebook from a repo where there is a trailing
+        newline, Databricks won't "show" an empty line in the UI. And similarly, this
+        API doesn't include it. This contrasts with the prefered style of terminating
+        the files with a newline, as enforced by black and blackbricks. To avoid
+        perpetually reporting diffs due to newlines, we add a trailing newline to the
+        content, _assuming_ that the
+        we assume it to be present and add it back if it is missing. Failing to do this
+        will cause blackbricks to perpetually report that it wants to add a trailing
+        newline to remote notebooks.
+        """
+        return self.api_client.read_notebook(self.path) + "\n"
 
     @content.setter
     def content(self, new_content: str, /) -> None:
+        """
+        Set the content of the notebook to the given string.
+
+        Note: We do _not_ need to do the inverse handling of trailing newlines as in
+        the getter. The new content here is presumably the output of blackbricks, and
+        we should let Databricks import that from the same source as it would find by
+        checking out a repo notebook that has been formatted with blackbricks.
+        """
         self.api_client.write_notebook(self.path, new_content)
 
 
@@ -71,12 +93,10 @@ def resolve_filepaths(paths: List[str]) -> List[str]:
             raise typer.Exit(1)
 
         if os.path.isdir(path):
-
             # Recursively  add all the files/dirs in path to the paths to be consumed.
             paths.extend([os.path.join(path, f) for f in os.listdir(path)])
 
         else:
-
             file_paths.append(path)
 
     return file_paths
