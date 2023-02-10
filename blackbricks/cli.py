@@ -136,11 +136,6 @@ def main(
     sql_upper: bool = typer.Option(
         True, help="SQL keywords should be UPPERCASE or lowercase."
     ),
-    no_indent_with_two_spaces: Optional[bool] = typer.Option(
-        None,
-        "--no-indent-with-two-spaces",
-        help="DEPRECATED: Blackbricks now uses 4 spaces for indentation by default. This option will be removed in future versions.",
-    ),
     check: bool = typer.Option(
         False,
         "--check",
@@ -182,19 +177,6 @@ def main(
       - File paths should start with `/`. Otherwise they are interpreted as relative to `/Users/username`, where `username` is the username specified in the Databricks profile used.
     """
     assert not version, "If version is set, we don't get here."
-
-    if no_indent_with_two_spaces is not None:
-        warnings.simplefilter("always", DeprecationWarning)
-        warnings.warn(
-            textwrap.dedent(
-                """
-                Blackbricks now uses 4 spaces for indentation by default.
-                Please stop using the `--no-indent-with-two-spaces` option, as it will be removed in future versions.
-                """
-            ),
-            category=DeprecationWarning,
-            stacklevel=0,
-        )
 
     mutually_exclusive(["--check", "--diff"], [check, diff])
 

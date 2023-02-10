@@ -1,3 +1,9 @@
+## 2.0.0 (2023-02-10)
+
+### BREAKING CHANGE
+
+- add newline at the end of formatted notebooks (#36)
+
 ## 1.0.5 (2023-02-07)
 
 ### Fix

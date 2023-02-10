@@ -11,16 +11,6 @@ A formatting tool for your Databricks notebooks.
 - Python cells are formatted with [black](https://github.com/psf/black)
 - SQL cells are formatted with [sqlparse](https://github.com/andialbrecht/sqlparse)
 
-## Breaking changes with version 1.0
-
-Earlier versions of blackbricks applied a patched version of black in order to allow two-space indentation. This was
-done because Databricks used two-space indentation, and did not allow you to change that. 
-
-Since then, Databricks has added the option to choose. Because you can now choose, blackbricks re-joins black in being
-uncompromising, and since version 1.0 you can no longer choose anything but 4 space indentation.
-
-If you _must_ keep using two-space indentation, then stick to versions `<1.0`.
-
 ## Table of Contents
 
 * [Installation](#installation)
@@ -28,6 +18,7 @@ If you _must_ keep using two-space indentation, then stick to versions `<1.0`.
 * [Version control integration](#version-control-integration)
 * [Contributing](#contributing)
 * [FAQ](#faq)
+* [Breaking changes](#breaking-changes)
 
 ## Installation
 
@@ -207,3 +198,23 @@ your installation method of choice.
 ### Shell commands like `!ls` throws an error
 
 See https://github.com/inspera/blackbricks/issues/21.
+
+## Breaking changes
+
+### Breaking changes with version 2.0
+
+Notebooks will be terminated with a `\n` starting with version `2.0.0`. This harmonizes EOF handling and should be much
+less annoying in practice than prior versions. This causes a diff on _any_ notebook that was previously formatted with
+`blackbricks<2.0.0`.
+
+Also, the deprecated and non-functional flag for two space indentation is removed, and providing said flag is now an error.
+
+### Breaking changes with version 1.0
+
+Earlier versions of blackbricks applied a patched version of black in order to allow two-space indentation. This was
+done because Databricks used two-space indentation, and did not allow you to change that. 
+
+Since then, Databricks has added the option to choose. Because you can now choose, blackbricks re-joins black in being
+uncompromising, and since version 1.0 you can no longer choose anything but 4 space indentation.
+
+If you _must_ keep using two-space indentation, then stick to versions `<1.0`.
