@@ -16,6 +16,7 @@ class FormatConfig:
     "Data-only class to hold format configuration options and their defaults."
     line_length: int = black.const.DEFAULT_LINE_LENGTH
     sql_upper: bool = True
+    end_in_newline: bool = False
 
 
 def format_str(content: str, config: FormatConfig = FormatConfig()) -> str:
@@ -72,7 +73,10 @@ def format_str(content: str, config: FormatConfig = FormatConfig()) -> str:
 
         output_ws_normalized += line + "\n"
 
-    return output_ws_normalized.strip()
+    output_ws_normalized = output_ws_normalized.strip()
+    if config.end_in_newline:
+        output_ws_normalized += "\n"
+    return output_ws_normalized
 
 
 def _format_sql_cell(

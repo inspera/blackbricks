@@ -131,6 +131,12 @@ def main(
         metavar="NAME",
         help="If using --remote, which Databricks profile to use.",
     ),
+    end_with_newline: bool = typer.Option(
+        False,
+        "--newline",
+        "-n",
+        help="If this option is used, all notebooks will end in newline.",
+    ),
     line_length: int = typer.Option(
         black.const.DEFAULT_LINE_LENGTH, help="How many characters per line to allow."
     ),
@@ -215,7 +221,11 @@ def main(
 
     n_changed_files = process_files(
         files,
-        format_config=FormatConfig(line_length=line_length, sql_upper=sql_upper),
+        format_config=FormatConfig(
+            line_length=line_length,
+            sql_upper=sql_upper,
+            end_in_newline=end_with_newline,
+        ),
         diff=diff,
         check=check,
     )
