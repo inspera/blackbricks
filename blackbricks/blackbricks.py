@@ -72,7 +72,7 @@ def format_str(content: str, config: FormatConfig = FormatConfig()) -> str:
 
         output_ws_normalized += line + "\n"
 
-    return output_ws_normalized.strip()
+    return output_ws_normalized.strip() + "\n"
 
 
 def _format_sql_cell(
