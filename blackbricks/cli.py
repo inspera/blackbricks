@@ -31,7 +31,6 @@ def process_files(
     n_notebooks = 0
 
     for file_ in files:
-
         try:
             content = file_.content
         except UnicodeDecodeError:
