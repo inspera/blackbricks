@@ -201,6 +201,17 @@ See https://github.com/inspera/blackbricks/issues/21.
 
 ## Breaking changes
 
+### Version policy
+
+Style choices made by `blackbricks` will follow semantic versioning, with changes that cause differences resulting in
+new major versions. Such changes will be kept to an absolute minimum, with none currently planned.
+
+Style choices made by `black` (responsible for 95% of the formatting in a notebook) will not follow the same strict
+semantic versioning. This is because `black` itself does not use semver, but instead provide a [year-based
+policy](https://black.readthedocs.io/en/stable/the_black_code_style/index.html#stability-policy). `blackbricks` will
+make a _minor_ version increase when it upgrades black to a new year. Such a bump should be made once the new year's
+release of `black` is available. Feel free to open an issue if this has not been done yet. 
+
 ### Breaking changes with version 2.0
 
 Notebooks will be terminated with a `\n` starting with version `2.0.0`. This harmonizes EOF handling and should be much
