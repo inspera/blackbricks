@@ -6,7 +6,17 @@ authors = ["Bendik Samseth <bendik.samseth@inspera.no>"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/inspera/blackbricks"
-keywords = ["automation", "formatter", "black", "sql", "yapf", "autopep8", "pyfmt", "gofmt", "rustfmt"]
+keywords = [
+    "automation",
+    "formatter",
+    "black",
+    "sql",
+    "yapf",
+    "autopep8",
+    "pyfmt",
+    "gofmt",
+    "rustfmt",
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
@@ -26,10 +36,10 @@ blackbricks = "blackbricks.cli:app"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-black = "^22.8.0"
+black = "^23.1.0"
 sqlparse = "^0.4.2"
 databricks-cli = "^0.17.3"
-typer = {extras = ["all"], version = "^0.6.1"}
+typer = { extras = ["all"], version = ">=0.6.1,<0.8" }
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.3"
@@ -43,10 +53,7 @@ mypy = "^0.971"
 name = "cz_conventional_commits"
 version = "2.0.0"
 tag_format = "$version"
-version_files = [
-    "blackbricks/__init__.py:version",
-    "pyproject.toml:version"
-]
+version_files = ["blackbricks/__init__.py:version", "pyproject.toml:version"]
 
 [tool.isort]
 profile = "black"
@@ -59,4 +66,3 @@ mypy_path = "type_stubs"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
