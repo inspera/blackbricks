@@ -1,3 +1,9 @@
+## 2.1.0 (2023-03-26)
+
+### Feat
+
+- upgrade to black's 2023 release
+
 ## 2.0.0 (2023-02-10)
 
 ### BREAKING CHANGE
