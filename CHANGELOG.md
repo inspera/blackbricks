@@ -1,8 +1,14 @@
+## 2.1.2 (2023-05-23)
+
+### Fix
+
+- **deps**: bump requests from 2.28.2 to 2.31.0 (#41)
+
 ## 2.1.1 (2023-04-26)
 
 ### Fix
 
-- bump sqlparse from 0.4.3 to 0.4.4 (#40)
+- **deps**: bump sqlparse from 0.4.3 to 0.4.4 (#40)
 
 ## 2.1.0 (2023-03-26)
 
