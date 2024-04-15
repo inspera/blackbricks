@@ -37,7 +37,7 @@ blackbricks = "blackbricks.cli:app"
 [tool.poetry.dependencies]
 python = "^3.8"
 black = "^23.1.0"
-sqlparse = "^0.4.2"
+sqlparse = ">=0.4.2,<0.6.0"
 databricks-cli = "^0.17.3"
 typer = { extras = ["all"], version = ">=0.6.1,<0.8" }
 
